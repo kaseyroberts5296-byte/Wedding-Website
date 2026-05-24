@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nathan & Kasey — August 22, 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&family=Great+Vibes&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:   #192035;
+      --navy2:  #0e1525;
+      --gold:   #c9a84c;
+      --gold2:  #e8c87a;
+      --goldDim:rgba(201,168,76,0.3);
+      --off:    #f0ead8;
+      --dim:    rgba(240,234,216,0.6);
+      --serif:  'Cormorant Garamond', Georgia, serif;
+      --script: 'Great Vibes', cursive;
+      --sans:   'Jost', sans-serif;
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body { background:var(--navy); color:var(--off); font-family:var(--sans); font-weight:300; line-height:1.7; overflow-x:hidden; }
+
+    #starfield { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+    /* ── TALLY DISPLAY ── */
+    #ufo-tally {
+      position:fixed; top:60px; left:50%; transform:translateX(-50%); z-index:200;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      opacity:0; transition:opacity 1s ease;
+      pointer-events:none;
+    }
+    #ufo-tally.visible { opacity:1; }
+    .tally-mark {
+      width:6px; height:28px;
+      background:linear-gradient(to bottom, var(--gold2), var(--gold), var(--gold2));
+      clip-path:polygon(50% 0%, 100% 20%, 100% 80%, 50% 100%, 0% 80%, 0% 20%);
+      filter:drop-shadow(0 0 6px rgba(201,168,76,0.7));
+      transform:scaleY(0);
+      transform-origin:center;
+      transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .tally-mark.show { transform:scaleY(1); }
+    .tally-group { display:flex; align-items:center; gap:6px; padding:0 4px; }
+
+    /* ── WEBSITE CONTENT FADE ── */
+    #site-content {
+      transition: opacity 2s ease;
+    }
+    #site-content.fading { opacity:0; pointer-events:none; }
+
+    /* ── GAME CANVAS ── */
+    #game-canvas {
+      position:fixed; inset:0; z-index:50;
+      pointer-events:none; opacity:0;
+      transition:opacity 2s ease;
+    }
+    #game-canvas.active { pointer-events:all; opacity:1; }
+
+    /* ── GAME UI OVERLAY ── */
+    #game-ui {
+      position:fixed; inset:0; z-index:60;
+      pointer-events:none; opacity:0;
+      transition:opacity 2s ease;
+      font-family:var(--sans);
+    }
+    #game-ui.active { opacity:1; }
+
+    #game-score {
+      position:absolute; top:18px; left:50%;
+      transform:translateX(-50%);
+      font-size:.65rem; letter-spacing:.22em; text-transform:uppercase;
+      color:var(--gold); text-align:center;
+    }
+    #game-score span { font-family:var(--serif); font-size:1.4rem; color:var(--gold2); display:block; }
+
+    #game-lives {
+      position:absolute; top:18px; left:24px;
+      font-size:.6rem; letter-spacing:.15em; text-transform:uppercase;
+      color:var(--gold); opacity:.8;
+    }
+
+    #game-message {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      text-align:center; pointer-events:none;
+    }
+    #game-message .gm-title {
+      font-family:var(--script); font-size:clamp(2.5rem,6vw,4rem);
+      color:var(--gold2); text-shadow:0 0 30px rgba(201,168,76,0.5);
+    }
+    #game-message .gm-sub {
+      font-size:.7rem; letter-spacing:.2em; text-transform:uppercase;
+      color:var(--off); opacity:.75; margin-top:.5rem;
+    }
+    #game-message .gm-action {
+      margin-top:1.5rem; font-size:.65rem; letter-spacing:.2em;
+      text-transform:uppercase; color:var(--gold);
+      border:1px solid var(--goldDim); padding:.5rem 1.5rem;
+      cursor:pointer; pointer-events:all; display:inline-block;
+      transition:background .2s, color .2s;
+    }
+    #game-message .gm-action:hover { background:rgba(201,168,76,0.15); color:var(--gold2); }
+
+    #game-wave-banner {
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+      z-index:65; pointer-events:none; text-align:center;
+      opacity:0; transition:opacity 0.6s ease;
+    }
+    #game-wave-banner.visible { opacity:1; }
+    #game-wave-banner .wb-wave {
+      font-family:var(--script); font-size:clamp(2rem,5vw,3.5rem);
+      color:var(--gold2); text-shadow:0 0 30px rgba(201,168,76,0.5);
+    }
+    #game-wave-banner .wb-sub {
+      font-size:.6rem; letter-spacing:.22em; text-transform:uppercase;
+      color:var(--off); opacity:.7; margin-top:.3rem;
+    }
+    #game-wave-banner .wb-bonus {
+      font-size:.65rem; letter-spacing:.15em; color:#6f6;
+      margin-top:.5rem; opacity:0; transition:opacity 0.4s ease 0.5s;
+    }
+    #game-wave-banner.visible .wb-bonus.show { opacity:1; }
+
+    #leaderboard-overlay {
+      position:fixed; inset:0; z-index:70;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(14,21,37,.85); backdrop-filter:blur(6px);
+      opacity:0; pointer-events:none; transition:opacity 0.5s ease;
+    }
+    #leaderboard-overlay.visible { opacity:1; pointer-events:all; }
+    .lb-panel {
+      width:min(420px,90vw); text-align:center; padding:2rem;
+    }
+    .lb-title {
+      font-family:var(--script); font-size:clamp(1.8rem,4vw,2.8rem);
+      color:var(--gold2); margin-bottom:.3rem;
+    }
+    .lb-subtitle {
+      font-size:.6rem; letter-spacing:.2em; text-transform:uppercase;
+      color:var(--off); opacity:.6; margin-bottom:1.5rem;
+    }
+    .lb-input-row {
+      display:flex; gap:.5rem; margin-bottom:1.5rem; justify-content:center;
+    }
+    .lb-input-row input {
+      background:rgba(255,255,255,.06); border:1px solid var(--goldDim);
+      color:var(--off); font-family:var(--sans); font-size:.8rem;
+      padding:.5rem .8rem; width:180px; outline:none;
+    }
+    .lb-input-row input:focus { border-color:var(--gold); }
+    .lb-input-row button {
+      background:transparent; border:1px solid var(--goldDim);
+      color:var(--gold); font-family:var(--sans); font-size:.6rem;
+      letter-spacing:.15em; text-transform:uppercase; padding:.5rem 1rem;
+      cursor:pointer; transition:background .2s, color .2s;
+    }
+    .lb-input-row button:hover { background:rgba(201,168,76,0.15); color:var(--gold2); }
+    .lb-scores {
+      list-style:none; margin:0 0 1.5rem; padding:0;
+    }
+    .lb-scores li {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:.4rem .6rem; font-size:.75rem; color:var(--off);
+      border-bottom:1px solid rgba(201,168,76,.08);
+    }
+    .lb-scores li:first-child { color:var(--gold2); font-weight:400; }
+    .lb-scores .lb-rank { width:2rem; text-align:left; color:var(--gold); opacity:.7; }
+    .lb-scores .lb-name { flex:1; text-align:left; }
+    .lb-scores .lb-sc { width:4rem; text-align:right; font-family:var(--serif); }
+    .lb-scores .lb-wv { width:3.5rem; text-align:right; font-size:.6rem; opacity:.6; }
+    .lb-empty { font-size:.7rem; color:var(--dim); opacity:.6; margin:1rem 0; }
+    .lb-actions {
+      display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap;
+    }
+    .lb-actions button {
+      background:transparent; border:1px solid var(--goldDim);
+      color:var(--gold); font-family:var(--sans); font-size:.6rem;
+      letter-spacing:.15em; text-transform:uppercase; padding:.5rem 1.2rem;
+      cursor:pointer; transition:background .2s, color .2s;
+    }
+    .lb-actions button:hover { background:rgba(201,168,76,0.15); color:var(--gold2); }
+
+    /* ── NAV ── */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      display:flex; align-items:center; justify-content:center; gap:2.5rem;
+      padding:1rem 2rem;
+      background:rgba(14,21,37,.92); backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--goldDim);
+    }
+    nav a { font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:var(--off); text-decoration:none; transition:color .2s; }
+    nav a:hover { color:var(--gold2); }
+    .nav-mono { font-family:var(--script); font-size:1.5rem; color:var(--gold); }
+
+    /* ── HERO ── */
+    #home {
+      min-height:100vh; position:relative;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center; padding:6rem 2rem 4rem; overflow:hidden;
+    }
+    .hero-glow { position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse 70% 50% at 50% 35%, rgba(201,168,76,.07) 0%, transparent 70%); }
+    .hero-ring { position:absolute; border-radius:50%; border:1px solid var(--goldDim); top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; animation:pulse 6s ease-in-out infinite; }
+    .hero-ring:nth-child(2){width:440px;height:440px;}
+    .hero-ring:nth-child(3){width:640px;height:640px;border-color:rgba(201,168,76,.18);animation-delay:-2s;}
+    .hero-ring:nth-child(4){width:860px;height:860px;border-color:rgba(201,168,76,.09);animation-delay:-4s;}
+    @keyframes pulse{ 0%,100%{opacity:.5} 50%{opacity:1} }
+
+    .hero-content { position:relative; z-index:1; }
+    .hero-wreath { width:130px; margin-bottom:1.2rem; animation:fadeUp 1s ease both; }
+    .hero-eyebrow { font-size:.65rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); margin-bottom:1rem; animation:fadeUp 1s .1s ease both; }
+    .hero-names { font-family:var(--script); font-size:clamp(4rem,12vw,9rem); color:var(--off); line-height:1; animation:fadeUp 1s .2s ease both; }
+    .hero-amp { display:block; font-size:clamp(2.5rem,7vw,5.5rem); color:var(--gold); margin:.1em 0; }
+    .hero-rule { width:80px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:1.8rem auto; animation:fadeUp 1s .35s ease both; }
+    .hero-date { font-size:.75rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold2); animation:fadeUp 1s .45s ease both; }
+
+    .countdown { display:flex; gap:2rem; justify-content:center; margin-top:3rem; animation:fadeUp 1s .6s ease both; }
+    .cd-unit { text-align:center; }
+    .cd-num { font-family:var(--serif); font-size:clamp(2rem,5vw,3.6rem); font-weight:300; color:var(--gold2); display:block; line-height:1; }
+    .cd-lbl { font-size:.58rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); opacity:.7; margin-top:.35rem; display:block; }
+    .cd-sep { font-family:var(--serif); font-size:2.2rem; color:var(--goldDim); align-self:flex-start; padding-top:.2rem; line-height:1; }
+
+    /* ── SECTIONS ── */
+    .wrap { padding:6rem 2rem; max-width:900px; margin:0 auto; position:relative; z-index:1; }
+    .wrap+.wrap { border-top:1px solid var(--goldDim); }
+    .eyebrow { font-size:.62rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); margin-bottom:.6rem; }
+    .stitle { font-family:var(--script); font-size:clamp(2.2rem,5vw,3.5rem); color:var(--off); line-height:1.2; margin-bottom:.5rem; }
+    .grule { width:60px; height:1px; background:linear-gradient(90deg,var(--gold),transparent); margin-bottom:2.5rem; }
+
+    /* ── TIMELINE ── */
+    .timeline { position:relative; }
+    .timeline::before { content:''; position:absolute; left:84px; top:0; bottom:0; width:1px; background:linear-gradient(to bottom,transparent,var(--goldDim) 8%,var(--goldDim) 92%,transparent); }
+    .tl-item { display:grid; grid-template-columns:84px 1fr; padding:2rem 0; position:relative; }
+    .tl-item+.tl-item { border-top:1px solid rgba(201,168,76,.1); }
+    .tl-item::after { content:''; position:absolute; left:79px; top:2.3rem; width:11px; height:11px; border-radius:50%; background:var(--navy); border:2px solid var(--gold); box-shadow:0 0 8px rgba(201,168,76,.5); }
+    .tl-time { font-family:var(--serif); font-size:1.05rem; font-style:italic; color:var(--gold2); text-align:right; padding-right:1.8rem; padding-top:.1rem; line-height:1.3; }
+    .tl-body { padding-left:1.8rem; }
+    .tl-name { font-family:var(--script); font-size:1.8rem; color:var(--off); line-height:1.2; margin-bottom:.3rem; }
+    .tl-detail { font-size:.8rem; color:var(--dim); line-height:1.7; }
+    .tl-tag { display:inline-block; margin-top:.55rem; font-size:.58rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); border:1px solid var(--goldDim); padding:.18rem .6rem; border-radius:20px; }
+
+    /* ── CARDS ── */
+    .card { border:1px solid var(--goldDim); background:rgba(255,255,255,.03); padding:2.5rem; position:relative; overflow:hidden; }
+    .card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+    .card-title { font-family:var(--script); font-size:2.2rem; color:var(--gold2); margin-bottom:.5rem; }
+    .card-sub { font-size:.82rem; color:var(--dim); line-height:1.8; }
+    .card-link { display:inline-block; margin-top:1.2rem; font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); text-decoration:none; border-bottom:1px solid var(--goldDim); padding-bottom:2px; transition:color .2s,border-color .2s; }
+    .card-link:hover { color:var(--gold2); border-color:var(--gold2); }
+
+    .dresscode-img-wrap { margin-top:2rem; border:1px solid var(--goldDim); overflow:hidden; position:relative; }
+    .dresscode-img-wrap::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); z-index:1; }
+    .dresscode-img-wrap img { display:block; width:100%; height:auto; opacity:.92; transition:opacity .3s; }
+    .dresscode-img-wrap img:hover { opacity:1; }
+    .dresscode-img-caption { text-align:center; font-size:.62rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); opacity:.7; padding:.75rem 1rem; background:rgba(255,255,255,.02); border-top:1px solid var(--goldDim); }
+
+    /* ── FOOTER ── */
+    footer { text-align:center; padding:4rem 2rem 3rem; border-top:1px solid var(--goldDim); position:relative; z-index:1; }
+    footer::before { content:''; display:block; width:80px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:0 auto 2rem; }
+    .foot-script { font-family:var(--script); font-size:3.5rem; color:var(--gold); }
+    .foot-date { font-size:.65rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); opacity:.55; margin-top:.5rem; }
+
+    /* ── ANIMS ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .75s ease,transform .75s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    @media(max-width:600px){
+      nav{gap:1rem;font-size:.6rem;}
+      .timeline::before{left:66px;}
+      .tl-item{grid-template-columns:66px 1fr;}
+      .tl-item::after{left:61px;}
+      .tl-time{font-size:.9rem;padding-right:1.2rem;}
+      .tl-body{padding-left:1.3rem;}
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<canvas id="game-canvas"></canvas>
+
+<!-- UFO TALLY -->
+<div id="ufo-tally"></div>
+
+<!-- GAME UI -->
+<div id="game-ui">
+  <div id="game-lives"></div>
+  <div id="game-score">Aliens Defeated<span id="gs-count">0</span></div>
+  <div id="game-wave-display" style="position:absolute;top:18px;right:24px;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);opacity:.8;">Wave <span id="gw-num">1</span></div>
+  <div id="game-message" style="display:none"></div>
+</div>
+<div id="game-wave-banner"><div class="wb-wave"></div><div class="wb-sub"></div><div class="wb-bonus"></div></div>
+<div id="leaderboard-overlay"><div class="lb-panel" id="lb-panel"></div></div>
+
+<!-- SITE CONTENT -->
+<div id="site-content">
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#itinerary">Itinerary</a>
+    <span class="nav-mono">N&K</span>
+    <a href="#venue">Venue</a>
+    <a href="#dresscode">Dress Code</a>
+    <a href="/photos.html">Photos</a>
+  </nav>
+
+  <section id="home" style="max-width:100%;padding:0;">
+    <div class="hero-glow"></div>
+    <div class="hero-ring"></div><div class="hero-ring"></div><div class="hero-ring"></div>
+    <div class="hero-content" style="padding:7rem 2rem 4rem;position:relative;z-index:1;">
+      <svg class="hero-wreath" viewBox="0 0 200 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#c9a84c" stroke-width="1.2" fill="none">
+          <path d="M18 58 Q38 28 60 48" stroke-linecap="round"/>
+          <path d="M28 43 Q18 28 34 22" stroke-linecap="round"/>
+          <path d="M41 35 Q34 18 50 16" stroke-linecap="round"/>
+          <path d="M22 53 Q8 43 13 32" stroke-linecap="round"/>
+          <path d="M182 58 Q162 28 140 48" stroke-linecap="round"/>
+          <path d="M172 43 Q182 28 166 22" stroke-linecap="round"/>
+          <path d="M159 35 Q166 18 150 16" stroke-linecap="round"/>
+          <path d="M178 53 Q192 43 187 32" stroke-linecap="round"/>
+          <path d="M54 62 Q100 88 146 62" stroke-linecap="round"/>
+          <ellipse cx="54" cy="48" rx="6" ry="3" transform="rotate(-30 54 48)" fill="rgba(201,168,76,.2)"/>
+          <ellipse cx="146" cy="48" rx="6" ry="3" transform="rotate(30 146 48)" fill="rgba(201,168,76,.2)"/>
+          <ellipse cx="36" cy="32" rx="5" ry="2.5" transform="rotate(-50 36 32)" fill="rgba(201,168,76,.2)"/>
+          <ellipse cx="164" cy="32" rx="5" ry="2.5" transform="rotate(50 164 32)" fill="rgba(201,168,76,.2)"/>
+        </g>
+        <text x="100" y="66" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="17" fill="#c9a84c" font-style="italic" letter-spacing="2">N&amp;K</text>
+      </svg>
+      <p class="hero-eyebrow">We're getting married</p>
+      <h1 class="hero-names">Nathan<span class="hero-amp">&amp;</span>Kasey</h1>
+      <div class="hero-rule"></div>
+      <p class="hero-date">Saturday, August 22, 2026 &nbsp;·&nbsp; University Place, WA</p>
+      <div class="countdown" id="countdown">
+        <div class="cd-unit"><span class="cd-num" id="cd-days">—</span><span class="cd-lbl">Days</span></div>
+        <span class="cd-sep">·</span>
+        <div class="cd-unit"><span class="cd-num" id="cd-hours">—</span><span class="cd-lbl">Hours</span></div>
+        <span class="cd-sep">·</span>
+        <div class="cd-unit"><span class="cd-num" id="cd-min">—</span><span class="cd-lbl">Min</span></div>
+        <span class="cd-sep">·</span>
+        <div class="cd-unit"><span class="cd-num" id="cd-sec">—</span><span class="cd-lbl">Sec</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap" id="itinerary">
+    <div class="reveal">
+      <p class="eyebrow">August 22, 2026</p>
+      <h2 class="stitle">The Day's Schedule</h2>
+      <div class="grule"></div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="tl-time">2:30</div>
+        <div class="tl-body">
+          <p class="tl-name">Doors Open</p>
+          <p class="tl-detail">The ESB — Environmental Services Building<br>9850 64th Street West, University Place, WA 98467<br>Guests are welcome to arrive and find their seats.</p>
+          <span class="tl-tag">Business Casual</span>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-time">3:00</div>
+        <div class="tl-body">
+          <p class="tl-name">Ceremony</p>
+          <p class="tl-detail">The wedding ceremony begins. Please be seated before 3:00 PM.</p>
+          <span class="tl-tag">Business Casual</span>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-time">3:30</div>
+        <div class="tl-body">
+          <p class="tl-name">Cocktail Hour</p>
+          <p class="tl-detail">Raise a glass and celebrate the newlyweds! Drinks and light bites will be served while the wedding party takes photos.</p>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-time">4:30</div>
+        <div class="tl-body">
+          <p class="tl-name">Dinner and Show</p>
+          <p class="tl-detail">Guests will be seated for a delicious dinner accompanied by entertainment and heartfelt speeches from family and friends.</p>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-time">5:30</div>
+        <div class="tl-body">
+          <p class="tl-name">Cake Cutting</p>
+          <p class="tl-detail">Join Nathan &amp; Kasey for the traditional cake cutting — dessert to follow!</p>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-time">6:00</div>
+        <div class="tl-body">
+          <p class="tl-name">Dancing</p>
+          <p class="tl-detail">The dance floor opens! Come celebrate and dance the night away with the happy couple until the evening wraps at 7:00 PM.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap" id="venue">
+    <div class="reveal">
+      <p class="eyebrow">Location</p>
+      <h2 class="stitle">Where to Find Us</h2>
+      <div class="grule"></div>
+    </div>
+    <div class="card reveal">
+      <p class="card-title">The ESB</p>
+      <p class="card-sub">Environmental Services Building<br>9850 64th Street West<br>University Place, WA 98467</p>
+      <a class="card-link" href="https://maps.google.com/?q=9850+64th+Street+West+University+Place+WA+98467" target="_blank" rel="noopener">Get Directions →</a>
+    </div>
+  </div>
+
+  <div class="wrap" id="dresscode">
+    <div class="reveal">
+      <p class="eyebrow">Attire</p>
+      <h2 class="stitle">Dress Code</h2>
+      <div class="grule"></div>
+    </div>
+    <div class="card reveal">
+      <p class="card-title">Business Casual</p>
+      <p class="card-sub">We'd love for guests to feel polished and comfortable. Think smart blazers, dress slacks, midi dresses, or dressy separates. Leave the jeans and sneakers at home — but no need for full black tie either. Come celebrate with us looking your best!</p>
+    </div>
+    <div class="dresscode-img-wrap reveal">
+      <img src="/images/dress-code-example.png" alt="Example of business casual attire for the wedding" loading="lazy" />
+      <p class="dresscode-img-caption">Examples of business casual attire</p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="foot-script">N &amp; K</div>
+    <p class="foot-date">8 · 22 · 2026 &nbsp;·&nbsp; University Place, WA</p>
+  </footer>
+</div><!-- end #site-content -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   STARFIELD + UFO + TALLY + EARTH DEFENSE GAME
+   ═══════════════════════════════════════════════════════════ */
+(function() {
+
+  /* ── Canvases ── */
+  const sfCanvas = document.getElementById('starfield');
+  const sfCtx    = sfCanvas.getContext('2d');
+  const gmCanvas = document.getElementById('game-canvas');
+  const gmCtx    = gmCanvas.getContext('2d');
+
+  function resize() {
+    sfCanvas.width = gmCanvas.width = window.innerWidth;
+    sfCanvas.height = gmCanvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  /* ══════════════════════════════════
+     TALLY SYSTEM
+     ══════════════════════════════════ */
+  let ufoKillCount = 0;           // kills on the ambient site (pre-game)
+  const KILLS_TO_GAME = 3;
+  const tallyEl = document.getElementById('ufo-tally');
+
+  function addTallyMark() {
+    const mark = document.createElement('div');
+    mark.className = 'tally-mark';
+    tallyEl.appendChild(mark);
+    tallyEl.classList.add('visible');
+    requestAnimationFrame(() => requestAnimationFrame(() => mark.classList.add('show')));
+  }
+
+  /* ══════════════════════════════════
+     STARS
+     ══════════════════════════════════ */
+  const NUM_STARS = 125;
+  const stars = Array.from({ length: NUM_STARS }, () => ({
+    x: Math.random(), y: Math.random(),
+    r: Math.random() * 1.6 + 0.4,
+    baseAlpha: Math.random() * 0.55 + 0.25,
+    alpha: 0,
+    speed: Math.random() * 0.018 + 0.005,
+    phase: Math.random() * Math.PI * 2,
+    gold: Math.random() < 0.22,
+    sparkTimer: Math.floor(Math.random() * 400),
+    sparking: false, sparkAlpha: 0,
+  }));
+
+  function drawStars() {
+    const W = sfCanvas.width, H = sfCanvas.height;
+    for (const s of stars) {
+      s.phase += s.speed;
+      s.alpha = s.baseAlpha * (0.3 + 0.7 * (Math.sin(s.phase) * 0.5 + 0.5));
+      s.sparkTimer--;
+      if (s.sparkTimer <= 0 && !s.sparking) {
+        s.sparking = true; s.sparkAlpha = 0;
+        s.sparkTimer = Math.floor(Math.random() * 600 + 300);
+      }
+      if (s.sparking) { s.sparkAlpha += 0.06; if (s.sparkAlpha >= 1) s.sparking = false; }
+      sfCtx.save();
+      sfCtx.globalAlpha = s.alpha;
+      sfCtx.beginPath();
+      sfCtx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+      sfCtx.fillStyle = s.gold ? '#e8c87a' : '#ffffff';
+      sfCtx.fill();
+      if (s.sparking || s.sparkAlpha > 0) {
+        const sa = Math.sin(s.sparkAlpha * Math.PI) * 0.8;
+        sfCtx.globalAlpha = sa;
+        sfCtx.strokeStyle = s.gold ? '#f5e0a0' : '#ffffff';
+        sfCtx.lineWidth = 0.5;
+        const sx = s.x * W, sy = s.y * H, fl = s.r * 4;
+        sfCtx.beginPath(); sfCtx.moveTo(sx-fl,sy); sfCtx.lineTo(sx+fl,sy); sfCtx.stroke();
+        sfCtx.beginPath(); sfCtx.moveTo(sx,sy-fl); sfCtx.lineTo(sx,sy+fl); sfCtx.stroke();
+      }
+      sfCtx.restore();
+    }
+  }
+
+  /* ══════════════════════════════════
+     SHOOTING STARS
+     ══════════════════════════════════ */
+  const shoots = [];
+  function spawnShoot() {
+    const fromLeft = Math.random() < 0.5;
+    const spd = Math.random() * 5 + 4;
+    const angle = (Math.random() * 30 + 20) * Math.PI / 180;
+    shoots.push({
+      x: fromLeft ? -10 : Math.random() * sfCanvas.width,
+      y: fromLeft ? Math.random() * sfCanvas.height * 0.6 : -10,
+      vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd,
+      len: Math.random() * 80 + 60, alpha: 0, life: 0,
+      maxLife: Math.floor(Math.random() * 40 + 60),
+    });
+  }
+  let nextShoot = Date.now() + 1500 + Math.random() * 2000;
+
+  function drawShoots() {
+    const W = sfCanvas.width, H = sfCanvas.height;
+    const now = Date.now();
+    if (now > nextShoot) { spawnShoot(); nextShoot = now + 3000 + Math.random() * 5000; }
+    for (let i = shoots.length - 1; i >= 0; i--) {
+      const sh = shoots[i];
+      sh.life++; sh.x += sh.vx; sh.y += sh.vy;
+      if (sh.life < 12)               sh.alpha = sh.life / 12;
+      if (sh.life > sh.maxLife - 20)  sh.alpha = Math.max(0, (sh.maxLife - sh.life) / 20);
+      if (sh.life > sh.maxLife || sh.x > W+100 || sh.y > H+100) { shoots.splice(i,1); continue; }
+      const mag = Math.sqrt(sh.vx*sh.vx + sh.vy*sh.vy);
+      const g = sfCtx.createLinearGradient(sh.x, sh.y, sh.x-(sh.vx/mag)*sh.len, sh.y-(sh.vy/mag)*sh.len);
+      g.addColorStop(0,   `rgba(255,255,240,${sh.alpha*0.9})`);
+      g.addColorStop(0.3, `rgba(232,200,122,${sh.alpha*0.5})`);
+      g.addColorStop(1,   'rgba(232,200,122,0)');
+      sfCtx.save();
+      sfCtx.strokeStyle = g; sfCtx.lineWidth = 1.5;
+      sfCtx.beginPath();
+      sfCtx.moveTo(sh.x, sh.y);
+      sfCtx.lineTo(sh.x-(sh.vx/mag)*sh.len, sh.y-(sh.vy/mag)*sh.len);
+      sfCtx.stroke();
+      sfCtx.globalAlpha = sh.alpha;
+      sfCtx.beginPath(); sfCtx.arc(sh.x, sh.y, 1.5, 0, Math.PI*2);
+      sfCtx.fillStyle = '#fff'; sfCtx.fill();
+      sfCtx.restore();
+    }
+  }
+
+  /* ══════════════════════════════════
+     UFO (AMBIENT — pre-game)
+     ══════════════════════════════════ */
+  const ambientUFOs = [];
+  const debris = [];
+
+  function spawnAmbientUFO() {
+    const goRight = Math.random() < 0.5;
+    const spd = Math.random() * 1.8 + 2.2;
+    ambientUFOs.push({
+      x: goRight ? -60 : sfCanvas.width + 60,
+      y: sfCanvas.height * (0.08 + Math.random() * 0.38),
+      vx: goRight ? spd : -spd,
+      alpha: 0, life: 0,
+      maxLife: Math.floor((sfCanvas.width + 120) / spd) + 20,
+      bobPhase: Math.random() * Math.PI * 2,
+      glowPhase: 0, goRight,
+    });
+  }
+  let nextAmbientUFO = Date.now() + 10000 + Math.random() * 10000;
+
+  function spawnDebris(x, y) {
+    for (let i = 0; i < 22; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const spd = Math.random() * 3.5 + 1;
+      debris.push({
+        x, y, vx: Math.cos(a)*spd, vy: Math.sin(a)*spd - Math.random()*2,
+        life: 0, maxLife: Math.floor(Math.random()*40+35),
+        r: Math.random()*2+0.5,
+        color: Math.random()<.5 ? '#b8d4f8' : (Math.random()<.5 ? '#e8c87a' : '#ff6644'),
+      });
+    }
+  }
+
+  function drawUFOShape(ctx, u, scale) {
+    scale = scale || 1;
+    const base = u.alpha * 0.58;
+    const td = u.goRight ? -1 : 1;
+    // trail
+    const tg = ctx.createLinearGradient(0,0,td*45*scale,0);
+    tg.addColorStop(0, `rgba(140,200,255,${base*0.15})`);
+    tg.addColorStop(1, 'rgba(140,200,255,0)');
+    ctx.beginPath();
+    ctx.ellipse(td*16*scale, 0, 35*scale, 3*scale, 0, 0, Math.PI*2);
+    ctx.fillStyle = tg; ctx.fill();
+    // disc
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 18*scale, 4*scale, 0, 0, Math.PI*2);
+    const dg = ctx.createLinearGradient(0,-4*scale,0,4*scale);
+    dg.addColorStop(0,    `rgba(215,228,248,${base*0.82})`);
+    dg.addColorStop(0.45, `rgba(155,180,220,${base*0.6})`);
+    dg.addColorStop(1,    `rgba(75,105,158,${base*0.3})`);
+    ctx.fillStyle = dg; ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(0,-0.8*scale,18*scale,4*scale,0,Math.PI,0);
+    ctx.strokeStyle=`rgba(235,243,255,${base*0.55})`; ctx.lineWidth=0.6; ctx.stroke();
+    // canopy
+    ctx.beginPath();
+    ctx.ellipse(0,-3.5*scale,6.5*scale,3.5*scale,0,Math.PI,0);
+    const cg = ctx.createRadialGradient(-1.5*scale,-5*scale,0.3,0,-4*scale,7*scale);
+    cg.addColorStop(0,  `rgba(225,238,255,${base*0.65})`);
+    cg.addColorStop(0.6,`rgba(150,185,230,${base*0.35})`);
+    cg.addColorStop(1,  `rgba(90,130,195,${base*0.1})`);
+    ctx.fillStyle = cg; ctx.fill();
+    // lights
+    const glowPulse = 0.5 + 0.5*Math.sin(u.glowPhase);
+    const lightDefs = [
+      {ox:-9,color:[255,80,80]},{ox:0,color:[80,220,140]},{ox:9,color:[100,180,255]}
+    ];
+    for (const ld of lightDefs) {
+      const blink = 0.4 + 0.6*Math.abs(Math.sin(u.glowPhase*1.4+ld.ox));
+      const [r,g,b] = ld.color;
+      const halo = ctx.createRadialGradient(ld.ox*scale,4*scale,0,ld.ox*scale,4*scale,5*scale);
+      halo.addColorStop(0,`rgba(${r},${g},${b},${base*0.45*blink})`);
+      halo.addColorStop(1,`rgba(${r},${g},${b},0)`);
+      ctx.beginPath(); ctx.arc(ld.ox*scale,4*scale,5*scale,0,Math.PI*2);
+      ctx.fillStyle=halo; ctx.fill();
+      ctx.beginPath(); ctx.arc(ld.ox*scale,3.5*scale,1.1*scale,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${r},${g},${b},${base*0.9*blink})`; ctx.fill();
+    }
+    // belly glow
+    const belly = ctx.createRadialGradient(0,3*scale,0,0,3*scale,13*scale);
+    belly.addColorStop(0,`rgba(180,220,255,${base*0.35*glowPulse})`);
+    belly.addColorStop(1,'rgba(140,190,240,0)');
+    ctx.beginPath(); ctx.ellipse(0,3*scale,13*scale,4*scale,0,0,Math.PI*2);
+    ctx.fillStyle=belly; ctx.fill();
+  }
+
+  function drawAmbientUFOs() {
+    const now = Date.now();
+    if (now > nextAmbientUFO && ambientUFOs.length === 0 && !gameActive) {
+      spawnAmbientUFO();
+      nextAmbientUFO = now + 10000 + Math.random() * 10000;
+    }
+    for (let i = ambientUFOs.length-1; i >= 0; i--) {
+      const u = ambientUFOs[i];
+      u.life++; u.x += u.vx; u.bobPhase += 0.022; u.glowPhase += 0.07;
+      if      (u.life < 30)               u.alpha = u.life/30;
+      else if (u.life > u.maxLife-30)     u.alpha = Math.max(0,(u.maxLife-u.life)/30);
+      else                                u.alpha = 1;
+      if (u.life > u.maxLife || u.x < -120 || u.x > sfCanvas.width+120) {
+        ambientUFOs.splice(i,1); continue;
+      }
+      const bobY = u.y + Math.sin(u.bobPhase)*2;
+      sfCtx.save(); sfCtx.translate(u.x, bobY);
+      drawUFOShape(sfCtx, u, 1);
+      sfCtx.restore();
+    }
+    // debris
+    for (let i = debris.length-1; i >= 0; i--) {
+      const d = debris[i];
+      d.life++; d.x += d.vx; d.y += d.vy; d.vy += 0.12; d.vx *= 0.97;
+      const p = d.life/d.maxLife;
+      if (d.life > d.maxLife) { debris.splice(i,1); continue; }
+      sfCtx.save();
+      sfCtx.globalAlpha = (1-p)*0.9;
+      sfCtx.beginPath(); sfCtx.arc(d.x,d.y,d.r*(1-p*0.5),0,Math.PI*2);
+      sfCtx.fillStyle = d.color; sfCtx.fill();
+      sfCtx.beginPath(); sfCtx.moveTo(d.x,d.y); sfCtx.lineTo(d.x-d.vx*3,d.y-d.vy*3);
+      sfCtx.strokeStyle=d.color; sfCtx.lineWidth=d.r*0.6; sfCtx.stroke();
+      sfCtx.restore();
+    }
+  }
+
+  /* ── Hit test ambient UFO ── */
+  function hitTestAmbient(cx, cy) {
+    if (gameActive) return;
+    for (let i = ambientUFOs.length-1; i >= 0; i--) {
+      const u = ambientUFOs[i];
+      const bobY = u.y + Math.sin(u.bobPhase)*2;
+      const dx = cx-u.x, dy = cy-bobY;
+      if ((dx*dx)/(22*22)+(dy*dy)/(12*12) <= 1) {
+        spawnDebris(u.x, bobY);
+        ambientUFOs.splice(i,1);
+        nextAmbientUFO = Date.now() + 10000 + Math.random()*10000;
+        ufoKillCount++;
+        addTallyMark();
+        if (ufoKillCount >= KILLS_TO_GAME) triggerGameTransition();
+        return;
+      }
+    }
+  }
+
+  /* ══════════════════════════════════
+     GAME TRANSITION
+     ══════════════════════════════════ */
+  let gameActive = false;
+  let gameState  = 'inactive'; // inactive | intro | playing | gameover | victory
+
+  function triggerGameTransition() {
+    // Fade site content out
+    document.getElementById('site-content').classList.add('fading');
+    // Hide tally marks so they don't cover the wave counter
+    tallyEl.classList.remove('visible');
+    setTimeout(() => {
+      startGame();
+    }, 2200);
+  }
+
+  /* ══════════════════════════════════
+     EARTH DEFENSE GAME
+     ══════════════════════════════════ */
+  let score = 0;
+  let lives = 3;
+  let wave  = 1;
+  const MAX_LIVES = 5;
+  const HEART = '♥';
+
+  function getWaveConfig(w) {
+    const count = Math.min(3 + Math.floor(w * 1.2), 12);
+    const speed = Math.min(1.0 + w * 0.15, 3.0);
+    const attackChance = Math.min(0.001 + w * 0.0004, 0.006);
+    const spawnDelay = Math.max(1200 - w * 60, 500);
+    return { count, speed, attackChance, spawnDelay };
+  }
+
+  function getWaveSubtitle(w) {
+    if (w <= 2) return 'Scout patrol incoming';
+    if (w <= 4) return 'They\'re getting organized';
+    if (w <= 7) return 'The fleet approaches';
+    if (w <= 10) return 'Full assault underway';
+    return 'The armada descends';
+  }
+
+  // Gun state
+  const gun = { angle: -Math.PI/2, x: 0, y: 0, earthR: 0 };
+
+  const bullets = [];
+  const gameUFOs = [];
+  const gameDebris = [];
+  let waveSpawnsRemaining = 0;
+  let wavePending = false;
+
+  // Input
+  let aimX = -1, aimY = -1;
+  let firing = false;
+
+  function startGame() {
+    gameActive = true;
+    gameState  = 'intro';
+    score = 0; lives = MAX_LIVES; wave = 1;
+    gameUFOs.length = 0; bullets.length = 0; gameDebris.length = 0;
+    waveSpawnsRemaining = 0;
+    wavePending = false;
+
+    gmCanvas.classList.add('active');
+    document.getElementById('game-ui').classList.add('active');
+    updateGameUI();
+
+    // Show intro message
+    showGameMessage(
+      'Earth Defense',
+      'Protect the wedding from alien invasion',
+      'Begin',
+      () => { gameState = 'playing'; hideGameMessage(); showWaveBanner(1); }
+    );
+  }
+
+  function spawnWave() {
+    wavePending = false;
+    const cfg = getWaveConfig(wave);
+    const W = gmCanvas.width;
+    const H = gmCanvas.height;
+    const count = cfg.count;
+    waveSpawnsRemaining = count;
+
+    const formation = wave % 4;
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        if (!gameActive || gameState !== 'playing') { waveSpawnsRemaining--; return; }
+        let startX, startY, goRight, targetY;
+
+        if (formation === 0) {
+          goRight = i % 2 === 0;
+          startX = goRight ? -50 : W + 50;
+          startY = -30 - Math.random() * 40;
+          targetY = H * (0.10 + (i / count) * 0.35);
+        } else if (formation === 1) {
+          goRight = Math.random() < 0.5;
+          startX = W * 0.2 + (W * 0.6) * (i / (count - 1 || 1));
+          startY = -50 - Math.random() * 30;
+          targetY = H * (0.15 + Math.random() * 0.25);
+        } else if (formation === 2) {
+          const half = Math.floor(count / 2);
+          goRight = i < half;
+          startX = goRight ? -50 : W + 50;
+          startY = -30 - Math.random() * 40;
+          targetY = H * (0.12 + Math.abs(i - half) * 0.06 + Math.random() * 0.1);
+        } else {
+          const centerX = W / 2;
+          const angle = (Math.PI * 0.3) + (Math.PI * 0.4) * (i / (count - 1 || 1));
+          goRight = i % 2 === 0;
+          startX = goRight ? -50 : W + 50;
+          startY = -40 - Math.random() * 40;
+          targetY = H * 0.15 + Math.sin(angle) * H * 0.2;
+        }
+
+        const spd = cfg.speed + Math.random() * 0.5;
+        gameUFOs.push({
+          x:          startX,
+          y:          startY,
+          vx:         goRight ? spd * 0.4 : -spd * 0.4,
+          vy:         spd * 0.55,
+          targetY,
+          phase:      'descend',
+          bobPhase:   Math.random() * Math.PI * 2,
+          glowPhase:  0,
+          alpha:      0,
+          life:       0,
+          goRight,
+          alive:      true,
+          beamCharge: 0,
+          beaming:    false,
+          beam:       null,
+          attackChance: cfg.attackChance,
+        });
+        waveSpawnsRemaining--;
+      }, i * cfg.spawnDelay);
+    }
+  }
+
+  function firePlayerBullet() {
+    if (gameState !== 'playing') return;
+    const speed = 12;
+    bullets.push({
+      x: gun.x + Math.cos(gun.angle)*gun.earthR*0.18,
+      y: gun.y + Math.sin(gun.angle)*gun.earthR*0.18,
+      vx: Math.cos(gun.angle)*speed,
+      vy: Math.sin(gun.angle)*speed,
+      life: 0, maxLife: 120,
+    });
+  }
+
+  function spawnGameDebris(x, y) {
+    for (let i = 0; i < 16; i++) {
+      const a = Math.random()*Math.PI*2, spd = Math.random()*4+1;
+      gameDebris.push({
+        x, y, vx: Math.cos(a)*spd, vy: Math.sin(a)*spd-1,
+        life:0, maxLife:Math.floor(Math.random()*35+25),
+        r: Math.random()*2.5+0.5,
+        color: Math.random()<.4?'#b8d4f8':(Math.random()<.5?'#e8c87a':'#ff6644'),
+      });
+    }
+  }
+
+  function drawEarthAndGun(ctx) {
+    const W = gmCanvas.width, H = gmCanvas.height;
+    const R = Math.min(W, H) * 0.13;
+    gun.earthR = R;
+    gun.x = W/2;
+    gun.y = H - R * 0.55;
+
+    // ── Earth: arc visible above bottom
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(W/2, gun.y, R, Math.PI, 0); // top half + a bit
+    // ocean base
+    const earthGrad = ctx.createRadialGradient(W/2-R*0.2, gun.y-R*0.3, R*0.05, W/2, gun.y, R);
+    earthGrad.addColorStop(0,   'rgba(100,160,220,0.95)');
+    earthGrad.addColorStop(0.5, 'rgba(50,110,180,0.9)');
+    earthGrad.addColorStop(1,   'rgba(20,60,130,0.85)');
+    ctx.fillStyle = earthGrad;
+    ctx.fill();
+    // continent blobs
+    ctx.save();
+    ctx.clip();
+    ctx.fillStyle = 'rgba(80,160,80,0.7)';
+    ctx.beginPath(); ctx.ellipse(W/2-R*0.3, gun.y-R*0.5, R*0.22, R*0.18, 0.3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(W/2+R*0.2, gun.y-R*0.35, R*0.28, R*0.15, -0.4, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(W/2-R*0.1, gun.y-R*0.1, R*0.15, R*0.12, 0.8, 0, Math.PI*2); ctx.fill();
+    // atmosphere glow
+    ctx.strokeStyle = 'rgba(120,180,255,0.35)';
+    ctx.lineWidth = R*0.08;
+    ctx.beginPath(); ctx.arc(W/2, gun.y, R+R*0.04, Math.PI, 0); ctx.stroke();
+    ctx.restore();
+    // rim
+    ctx.strokeStyle = 'rgba(120,200,255,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(W/2, gun.y, R, Math.PI, 0);
+    ctx.stroke();
+    ctx.restore();
+
+    // ── Gun turret on top of earth
+    // Update angle toward aim
+    if (aimX >= 0) {
+      const dx = aimX - gun.x, dy = aimY - gun.y;
+      let a = Math.atan2(dy, dx);
+      // clamp to upper semicircle
+      if (a > -0.1) a = -0.1;
+      if (a < -Math.PI+0.1) a = -Math.PI+0.1;
+      gun.angle = a;
+    }
+
+    const turretLen = R * 0.32;
+    const turretW   = R * 0.06;
+    const tx = gun.x + Math.cos(gun.angle) * R * 0.04;
+    const ty = gun.y + Math.sin(gun.angle) * R * 0.04;
+
+    ctx.save();
+    ctx.translate(tx, ty);
+    ctx.rotate(gun.angle);
+    // barrel
+    const barrelGrad = ctx.createLinearGradient(0,-turretW,0,turretW);
+    barrelGrad.addColorStop(0,'rgba(220,230,245,0.9)');
+    barrelGrad.addColorStop(1,'rgba(100,130,180,0.8)');
+    ctx.fillStyle = barrelGrad;
+    ctx.beginPath();
+    ctx.roundRect(0, -turretW/2, turretLen, turretW, turretW/2);
+    ctx.fill();
+    // muzzle flash ring
+    ctx.strokeStyle = 'rgba(201,168,76,0.6)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(turretLen, 0, turretW*0.8, 0, Math.PI*2);
+    ctx.stroke();
+    // base dome
+    ctx.restore();
+    ctx.save();
+    ctx.translate(gun.x, gun.y);
+    const domeGrad = ctx.createRadialGradient(-R*0.04,-R*0.06,0.5,0,0,R*0.13);
+    domeGrad.addColorStop(0,'rgba(200,220,245,0.95)');
+    domeGrad.addColorStop(1,'rgba(80,110,180,0.7)');
+    ctx.beginPath(); ctx.arc(0, 0, R*0.13, Math.PI, 0);
+    ctx.fillStyle = domeGrad; ctx.fill();
+    ctx.strokeStyle='rgba(180,210,255,0.5)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.arc(0,0,R*0.13,Math.PI,0); ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawGameUFO(ctx, u) {
+    const bobY = u.y + Math.sin(u.bobPhase)*3;
+    ctx.save(); ctx.translate(u.x, bobY);
+    drawUFOShape(ctx, u, 1.3);
+    // beam charge visual
+    if (u.beamCharge > 0) {
+      ctx.save();
+      ctx.globalAlpha = u.beamCharge * u.alpha * 0.6;
+      const bg = ctx.createRadialGradient(0,6,0,0,6,20);
+      bg.addColorStop(0,'rgba(150,255,150,0.8)');
+      bg.addColorStop(1,'rgba(150,255,150,0)');
+      ctx.beginPath(); ctx.arc(0,6,20,0,Math.PI*2);
+      ctx.fillStyle=bg; ctx.fill();
+      ctx.restore();
+    }
+    ctx.restore();
+    // draw beam if firing
+    if (u.beaming && u.beam) {
+      ctx.save();
+      ctx.globalAlpha = u.alpha * 0.55;
+      const x0=u.x, y0=u.y+8, x1=gun.x, y1=gun.y;
+      const bg2 = ctx.createLinearGradient(x0,y0,x1,y1);
+      bg2.addColorStop(0,'rgba(80,255,80,0.8)');
+      bg2.addColorStop(1,'rgba(80,255,80,0)');
+      ctx.strokeStyle=bg2; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function drawBullets(ctx) {
+    for (let i = bullets.length-1; i >= 0; i--) {
+      const b = bullets[i];
+      b.life++; b.x += b.vx; b.y += b.vy;
+      const W=gmCanvas.width, H=gmCanvas.height;
+      if (b.life>b.maxLife||b.x<0||b.x>W||b.y<0||b.y>H) { bullets.splice(i,1); continue; }
+      ctx.save();
+      // bullet glow
+      const bg = ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,5);
+      bg.addColorStop(0,'rgba(201,168,76,1)');
+      bg.addColorStop(1,'rgba(201,168,76,0)');
+      ctx.beginPath(); ctx.arc(b.x,b.y,5,0,Math.PI*2);
+      ctx.fillStyle=bg; ctx.fill();
+      // core
+      ctx.beginPath(); ctx.arc(b.x,b.y,2,0,Math.PI*2);
+      ctx.fillStyle='#fff'; ctx.fill();
+      // trail
+      ctx.strokeStyle='rgba(232,200,122,0.4)'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(b.x,b.y); ctx.lineTo(b.x-b.vx*4,b.y-b.vy*4); ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function drawGameDebris(ctx) {
+    for (let i = gameDebris.length-1; i >= 0; i--) {
+      const d = gameDebris[i];
+      d.life++; d.x+=d.vx; d.y+=d.vy; d.vy+=0.1; d.vx*=0.97;
+      const p = d.life/d.maxLife;
+      if (d.life>d.maxLife) { gameDebris.splice(i,1); continue; }
+      ctx.save(); ctx.globalAlpha=(1-p)*0.9;
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.r*(1-p*0.5),0,Math.PI*2);
+      ctx.fillStyle=d.color; ctx.fill();
+      ctx.beginPath(); ctx.moveTo(d.x,d.y); ctx.lineTo(d.x-d.vx*3,d.y-d.vy*3);
+      ctx.strokeStyle=d.color; ctx.lineWidth=d.r*0.5; ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function updateGameUFOs() {
+    let alive = 0;
+    let pendingSpawns = false;
+    for (let i = gameUFOs.length-1; i >= 0; i--) {
+      const u = gameUFOs[i];
+      if (!u.alive) continue;
+      alive++;
+      u.life++; u.bobPhase+=0.025; u.glowPhase+=0.07;
+      u.alpha = Math.min(1, u.life/40);
+
+      if (u.phase === 'descend') {
+        u.x += u.vx; u.y += u.vy;
+        if (u.y >= u.targetY) { u.phase = 'cruise'; u.vy = 0; }
+      } else if (u.phase === 'cruise') {
+        u.x += u.vx;
+        if (u.x < 30 || u.x > gmCanvas.width-30) u.vx *= -1;
+        if (Math.random() < (u.attackChance || 0.003) && !u.beaming) {
+          u.beamCharge = 0;
+          u.phase = 'charge';
+        }
+      } else if (u.phase === 'charge') {
+        u.x += u.vx * 0.3;
+        u.beamCharge = Math.min(1, u.beamCharge + 0.015);
+        if (u.beamCharge >= 1) {
+          u.phase = 'beam'; u.beaming = true;
+          u.beam = { life:0, maxLife: 50 };
+        }
+      } else if (u.phase === 'beam') {
+        u.beam.life++;
+        if (u.beam.life > u.beam.maxLife) {
+          u.beaming = false; u.beamCharge = 0; u.phase = 'cruise';
+          lives--;
+          updateGameUI();
+          if (lives <= 0) { u.alive=false; endGame(false); return; }
+        }
+      }
+
+      const bobY = u.y + Math.sin(u.bobPhase)*3;
+      for (let j = bullets.length-1; j >= 0; j--) {
+        const b = bullets[j];
+        const dx=b.x-u.x, dy=b.y-bobY;
+        if (Math.sqrt(dx*dx+dy*dy) < 20) {
+          spawnGameDebris(u.x, bobY);
+          bullets.splice(j,1);
+          u.alive = false;
+          score++;
+          updateGameUI();
+          break;
+        }
+      }
+    }
+
+    for (let i = gameUFOs.length-1; i >= 0; i--) {
+      if (!gameUFOs[i].alive) gameUFOs.splice(i,1);
+    }
+
+    if (gameState==='playing' && gameUFOs.length===0 && alive===0 && waveSpawnsRemaining<=0 && !wavePending) {
+      wavePending = true;
+      wave++;
+      showWaveBanner(wave);
+    }
+  }
+
+  function updateGameUI() {
+    document.getElementById('gs-count').textContent = score;
+    document.getElementById('gw-num').textContent = wave;
+    const livesEl = document.getElementById('game-lives');
+    let h = '';
+    for (let i=0;i<MAX_LIVES;i++) {
+      h += `<span style="color:${i<lives?'#e8c87a':'rgba(201,168,76,0.2)'}; font-size:1rem; margin-right:4px;">${HEART}</span>`;
+    }
+    livesEl.innerHTML = h;
+  }
+
+  function showGameMessage(title, sub, actionLabel, onAction) {
+    const el = document.getElementById('game-message');
+    el.style.display='block';
+    el.innerHTML = `
+      <div class="gm-title">${title}</div>
+      <div class="gm-sub">${sub}</div>
+      ${actionLabel ? `<div class="gm-action" id="gm-action-btn">${actionLabel}</div>` : ''}
+    `;
+    if (actionLabel && onAction) {
+      document.getElementById('gm-action-btn').addEventListener('click', onAction);
+    }
+  }
+  function hideGameMessage() {
+    document.getElementById('game-message').style.display='none';
+  }
+
+  function showWaveBanner(w) {
+    const banner = document.getElementById('game-wave-banner');
+    const waveEl = banner.querySelector('.wb-wave');
+    const subEl = banner.querySelector('.wb-sub');
+    const bonusEl = banner.querySelector('.wb-bonus');
+
+    waveEl.textContent = 'Wave ' + w;
+    subEl.textContent = getWaveSubtitle(w);
+
+    let bonusLife = false;
+    if (w > 1 && (w - 1) % 5 === 0 && lives < MAX_LIVES) {
+      lives++;
+      updateGameUI();
+      bonusLife = true;
+    }
+    bonusEl.textContent = bonusLife ? '+1 Life Restored' : '';
+    bonusEl.className = 'wb-bonus' + (bonusLife ? ' show' : '');
+
+    banner.classList.add('visible');
+    setTimeout(() => {
+      banner.classList.remove('visible');
+      setTimeout(() => {
+        if (gameState === 'playing') spawnWave();
+      }, 400);
+    }, 2000);
+  }
+
+  async function fetchLeaderboard() {
+    try {
+      const resp = await fetch('/api/leaderboard');
+      if (!resp.ok) return [];
+      return await resp.json();
+    } catch { return []; }
+  }
+
+  async function submitScore(playerName) {
+    try {
+      const resp = await fetch('/api/leaderboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ playerName, score, waveReached: wave }),
+      });
+      if (!resp.ok) return null;
+      return await resp.json();
+    } catch { return null; }
+  }
+
+  function renderLeaderboard(scores, highlightId) {
+    const panel = document.getElementById('lb-panel');
+    let html = '<div class="lb-title">Leaderboard</div>';
+    html += '<div class="lb-subtitle">Top Earth Defenders</div>';
+    if (scores.length === 0) {
+      html += '<div class="lb-empty">No scores yet — be the first!</div>';
+    } else {
+      html += '<ul class="lb-scores">';
+      scores.forEach((s, i) => {
+        const hl = s.id === highlightId ? ' style="background:rgba(201,168,76,.08);"' : '';
+        html += `<li${hl}><span class="lb-rank">${i+1}.</span><span class="lb-name">${escapeHtml(s.playerName || s.player_name)}</span><span class="lb-sc">${s.score}</span><span class="lb-wv">W${s.waveReached || s.wave_reached}</span></li>`;
+      });
+      html += '</ul>';
+    }
+    return html;
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function showLeaderboardOverlay(canSubmit) {
+    const overlay = document.getElementById('leaderboard-overlay');
+    const panel = document.getElementById('lb-panel');
+
+    panel.innerHTML = '<div class="lb-title">Leaderboard</div><div class="lb-subtitle">Loading...</div>';
+    overlay.classList.add('visible');
+
+    fetchLeaderboard().then(scores => {
+      let html = renderLeaderboard(scores, null);
+      if (canSubmit && score > 0) {
+        html += `<div class="lb-input-row"><input type="text" id="lb-name-input" placeholder="Your name" maxlength="20" /><button id="lb-submit-btn">Submit</button></div>`;
+      }
+      html += '<div class="lb-actions"><button id="lb-retry-btn">Play Again</button><button id="lb-exit-btn">Return to Site</button></div>';
+      panel.innerHTML = html;
+
+      if (canSubmit && score > 0) {
+        const input = document.getElementById('lb-name-input');
+        const btn = document.getElementById('lb-submit-btn');
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
+        btn.addEventListener('click', async () => {
+          const name = input.value.trim();
+          if (!name) { input.focus(); return; }
+          btn.textContent = '...';
+          btn.disabled = true;
+          const result = await submitScore(name);
+          if (result && result.topScores) {
+            let newHtml = renderLeaderboard(result.topScores, result.entry ? result.entry.id : null);
+            newHtml += '<div class="lb-actions"><button id="lb-retry-btn">Play Again</button><button id="lb-exit-btn">Return to Site</button></div>';
+            panel.innerHTML = newHtml;
+            bindLeaderboardActions();
+          }
+        });
+      }
+      bindLeaderboardActions();
+    });
+  }
+
+  function bindLeaderboardActions() {
+    const retryBtn = document.getElementById('lb-retry-btn');
+    const exitBtn = document.getElementById('lb-exit-btn');
+    if (retryBtn) retryBtn.addEventListener('click', () => {
+      document.getElementById('leaderboard-overlay').classList.remove('visible');
+      hideGameMessage();
+      score=0; lives=MAX_LIVES; wave=1; wavePending=false; gameState='playing'; updateGameUI();
+      showWaveBanner(1);
+    });
+    if (exitBtn) exitBtn.addEventListener('click', () => {
+      document.getElementById('leaderboard-overlay').classList.remove('visible');
+      returnToSite();
+    });
+  }
+
+  function hideLeaderboard() {
+    document.getElementById('leaderboard-overlay').classList.remove('visible');
+  }
+
+  function endGame(victory) {
+    gameState = victory ? 'victory' : 'gameover';
+    gameUFOs.length = 0;
+    if (victory) {
+      showGameMessage(
+        'The Wedding is Safe!',
+        `You defeated ${score} alien invaders across ${wave} waves`,
+        'View Leaderboard',
+        () => { hideGameMessage(); showLeaderboardOverlay(true); }
+      );
+    } else {
+      showGameMessage(
+        'The Aliens Win...',
+        `You defeated ${score} invaders across ${wave} waves`,
+        'View Leaderboard',
+        () => { hideGameMessage(); showLeaderboardOverlay(true); }
+      );
+    }
+  }
+
+  function returnToSite() {
+    gameActive = false; gameState = 'inactive';
+    gmCanvas.classList.remove('active');
+    document.getElementById('game-ui').classList.remove('active');
+    document.getElementById('site-content').classList.remove('fading');
+    hideGameMessage();
+    hideLeaderboard();
+    // Reset tally
+    ufoKillCount = 0;
+    tallyEl.innerHTML = '';
+    tallyEl.classList.remove('visible');
+    nextAmbientUFO = Date.now() + 10000 + Math.random()*10000;
+  }
+
+  /* ── Input ── */
+  function onPointerMove(e) {
+    if (!gameActive) return;
+    aimX = e.clientX; aimY = e.clientY;
+  }
+  function onPointerDown(e) {
+    aimX = e.clientX; aimY = e.clientY;
+    if (gameActive && gameState==='playing') {
+      firing = true;
+      firePlayerBullet();
+    } else {
+      hitTestAmbient(e.clientX, e.clientY);
+    }
+  }
+  function onTouchStart(e) {
+    const t = e.touches[0];
+    aimX = t.clientX; aimY = t.clientY;
+    if (gameActive && gameState==='playing') {
+      e.preventDefault();
+      firePlayerBullet();
+    } else {
+      hitTestAmbient(t.clientX, t.clientY);
+    }
+  }
+  function onTouchMove(e) {
+    if (!gameActive) return;
+    e.preventDefault();
+    const t = e.touches[0]; aimX=t.clientX; aimY=t.clientY;
+  }
+  window.addEventListener('mousemove',  onPointerMove);
+  window.addEventListener('mousedown',  onPointerDown);
+  window.addEventListener('touchstart', onTouchStart, {passive:false});
+  window.addEventListener('touchmove',  onTouchMove,  {passive:false});
+  window.addEventListener('keydown', e => {
+    if (e.code==='Space' && gameActive && gameState==='playing') { e.preventDefault(); firePlayerBullet(); }
+  });
+
+  /* ══════════════════════════════════
+     MAIN LOOPS
+     ══════════════════════════════════ */
+  function starLoop() {
+    sfCtx.clearRect(0,0,sfCanvas.width,sfCanvas.height);
+    drawStars();
+    drawShoots();
+    drawAmbientUFOs();
+    requestAnimationFrame(starLoop);
+  }
+
+  function gameLoop() {
+    gmCtx.clearRect(0,0,gmCanvas.width,gmCanvas.height);
+    if (gameActive && (gameState==='playing'||gameState==='gameover'||gameState==='victory')) {
+      drawEarthAndGun(gmCtx);
+      if (gameState==='playing') updateGameUFOs();
+      for (const u of gameUFOs) drawGameUFO(gmCtx, u);
+      drawBullets(gmCtx);
+      drawGameDebris(gmCtx);
+    }
+    requestAnimationFrame(gameLoop);
+  }
+
+  starLoop();
+  gameLoop();
+
+})();
+
+/* ── COUNTDOWN ── */
+const wedding = new Date('2026-08-22T15:00:00-07:00').getTime();
+function tick() {
+  const diff = wedding - Date.now();
+  if (diff <= 0) {
+    document.getElementById('countdown').innerHTML =
+      '<p style="font-family:var(--script);font-size:2rem;color:var(--gold)">Today\'s the day! ✨</p>';
+    return;
+  }
+  document.getElementById('cd-days').textContent  = Math.floor(diff/86400000);
+  document.getElementById('cd-hours').textContent = String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
+  document.getElementById('cd-min').textContent   = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+  document.getElementById('cd-sec').textContent   = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+}
+tick(); setInterval(tick,1000);
+
+const obs = new IntersectionObserver(entries =>
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+  { threshold: 0.1 }
+);
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

@@ -1,7 +1,458 @@
-CREATE TABLE "leaderboard" (
-	"id" serial PRIMARY KEY,
-	"player_name" text NOT NULL,
-	"score" integer NOT NULL,
-	"wave_reached" integer NOT NULL,
-	"created_at" timestamp DEFAULT now()
-);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photos — Nathan & Kasey · August 22, 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&family=Great+Vibes&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:   #192035;
+      --navy2:  #0e1525;
+      --gold:   #c9a84c;
+      --gold2:  #e8c87a;
+      --goldDim:rgba(201,168,76,0.3);
+      --off:    #f0ead8;
+      --dim:    rgba(240,234,216,0.6);
+      --serif:  'Cormorant Garamond', Georgia, serif;
+      --script: 'Great Vibes', cursive;
+      --sans:   'Jost', sans-serif;
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body { background:var(--navy); color:var(--off); font-family:var(--sans); font-weight:300; line-height:1.7; overflow-x:hidden; }
+
+    #starfield { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+    /* NAV */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      display:flex; align-items:center; justify-content:center; gap:2.5rem;
+      padding:1rem 2rem;
+      background:rgba(14,21,37,.92); backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--goldDim);
+    }
+    nav a { font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:var(--off); text-decoration:none; transition:color .2s; }
+    nav a:hover { color:var(--gold2); }
+    nav a.active { color:var(--gold2); }
+    .nav-mono { font-family:var(--script); font-size:1.5rem; color:var(--gold); text-decoration:none; }
+
+    /* PAGE HEADER */
+    .page-header {
+      min-height:38vh; position:relative;
+      display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+      text-align:center; padding:7rem 2rem 3.5rem; overflow:hidden;
+    }
+    .page-header-glow {
+      position:absolute; inset:0; pointer-events:none;
+      background:radial-gradient(ellipse 70% 50% at 50% 60%, rgba(201,168,76,.07) 0%, transparent 70%);
+    }
+    .page-header-content { position:relative; z-index:1; }
+    .hero-eyebrow { font-size:.65rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); margin-bottom:1rem; animation:fadeUp 1s .1s ease both; }
+    .page-title { font-family:var(--script); font-size:clamp(3.5rem,10vw,6rem); color:var(--off); line-height:1; animation:fadeUp 1s .2s ease both; }
+    .hero-rule { width:80px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:1.5rem auto 0; animation:fadeUp 1s .3s ease both; }
+
+    /* GALLERY */
+    .gallery-wrap {
+      max-width:1100px; margin:0 auto;
+      padding:3.5rem 2rem 6rem;
+      position:relative; z-index:1;
+    }
+    .gallery-count {
+      text-align:center;
+      font-size:.62rem; letter-spacing:.22em; text-transform:uppercase;
+      color:var(--gold); opacity:.6; margin-bottom:2.5rem;
+      animation:fadeUp 1s .4s ease both;
+    }
+    .gallery-grid {
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+      animation:fadeUp 1s .5s ease both;
+    }
+    .gallery-item {
+      position:relative; overflow:hidden; cursor:pointer;
+      aspect-ratio:1/1;
+      border:1px solid var(--goldDim);
+      background:var(--navy2);
+    }
+    .gallery-item::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg,transparent,var(--gold),transparent);
+      opacity:0; transition:opacity .3s; z-index:2;
+    }
+    .gallery-item:hover::before { opacity:1; }
+    .gallery-item img {
+      display:block; width:100%; height:100%;
+      object-fit:cover;
+      transition:transform .45s ease, opacity .3s;
+      opacity:.85;
+    }
+    .gallery-item:hover img { transform:scale(1.05); opacity:1; }
+    .gallery-overlay {
+      position:absolute; inset:0; z-index:1;
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; transition:opacity .3s;
+      background:rgba(14,21,37,.45);
+    }
+    .gallery-item:hover .gallery-overlay { opacity:1; }
+    .gallery-overlay svg { width:32px; height:32px; }
+
+    /* LIGHTBOX */
+    .lightbox {
+      position:fixed; inset:0; z-index:500;
+      background:rgba(9,14,25,.96);
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; pointer-events:none;
+      transition:opacity .3s ease;
+    }
+    .lightbox.open { opacity:1; pointer-events:all; }
+    .lb-img-wrap {
+      position:relative; max-width:min(90vw, 900px);
+      max-height:85vh;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .lb-img-wrap img {
+      display:block; max-width:100%; max-height:85vh;
+      object-fit:contain;
+      border:1px solid var(--goldDim);
+      box-shadow:0 0 60px rgba(201,168,76,.12);
+    }
+    .lb-close {
+      position:fixed; top:1.5rem; right:1.8rem;
+      width:44px; height:44px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; z-index:10;
+      color:var(--gold); font-size:1.8rem; font-weight:300;
+      opacity:.7; transition:opacity .2s;
+      background:rgba(14,21,37,.7); border:1px solid var(--goldDim); border-radius:50%;
+    }
+    .lb-close:hover { opacity:1; }
+    .lb-arrow {
+      position:fixed; top:50%; transform:translateY(-50%);
+      width:48px; height:48px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; z-index:10;
+      color:var(--off); font-size:1.4rem;
+      opacity:.5; transition:opacity .2s;
+      background:rgba(14,21,37,.6); border:1px solid var(--goldDim); border-radius:50%;
+    }
+    .lb-arrow:hover { opacity:1; }
+    .lb-prev { left:1.2rem; }
+    .lb-next { right:1.2rem; }
+    .lb-counter {
+      position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%);
+      font-size:.6rem; letter-spacing:.2em; text-transform:uppercase;
+      color:var(--gold); opacity:.6;
+    }
+
+    /* FOOTER */
+    footer { text-align:center; padding:4rem 2rem 3rem; border-top:1px solid var(--goldDim); position:relative; z-index:1; }
+    footer::before { content:''; display:block; width:80px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:0 auto 2rem; }
+    .foot-script { font-family:var(--script); font-size:3.5rem; color:var(--gold); }
+    .foot-date { font-size:.65rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); opacity:.55; margin-top:.5rem; }
+
+    /* ANIMS */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+
+    @media(max-width:700px){
+      nav{gap:1rem;}
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); gap:6px; }
+      .lb-prev { left:.5rem; }
+      .lb-next { right:.5rem; }
+    }
+    @media(max-width:400px){
+      .gallery-grid { grid-template-columns: 1fr 1fr; gap:4px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<nav>
+  <a href="/">Home</a>
+  <a href="/#itinerary">Itinerary</a>
+  <a href="/" class="nav-mono">N&K</a>
+  <a href="/#venue">Venue</a>
+  <a href="/photos.html" class="active">Photos</a>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-glow"></div>
+  <div class="page-header-content">
+    <p class="hero-eyebrow">Nathan &amp; Kasey</p>
+    <h1 class="page-title">Our Photos</h1>
+    <div class="hero-rule"></div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<div class="gallery-wrap">
+  <p class="gallery-count">13 photos</p>
+  <div class="gallery-grid" id="galleryGrid">
+
+    <div class="gallery-item" data-index="0">
+      <img src="https://media-api.xogrp.com/images/32070baa-499d-4b34-afe0-ad0dde03acbc~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 1" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="1">
+      <img src="https://media-api.xogrp.com/images/7125ef0a-47d6-4855-8155-1b7a470399fb~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 2" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="2">
+      <img src="https://media-api.xogrp.com/images/57925dfc-5b5b-40f7-a1ed-e7d19a4742a1~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 3" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="3">
+      <img src="https://media-api.xogrp.com/images/3cac0d82-9bbb-45af-9347-d93c4435f94f~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 4" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="4">
+      <img src="https://media-api.xogrp.com/images/3b2ebf4e-1091-4421-a5cf-c81109a276e8~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 5" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="5">
+      <img src="https://media-api.xogrp.com/images/51803c9c-6ad6-47f7-9830-3755f8408ec3~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 6" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="6">
+      <img src="https://media-api.xogrp.com/images/5d83ff33-50c9-48fa-8d98-d9b7ea2446a9~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 7" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="7">
+      <img src="https://media-api.xogrp.com/images/f9bcf8dc-78f8-4a17-a02e-cff0855d64d1~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 8" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="8">
+      <img src="https://media-api.xogrp.com/images/8bfc2bf5-906c-4e71-ae7f-4370e5885810~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 9" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="9">
+      <img src="https://media-api.xogrp.com/images/d337cb96-d76b-4683-a3bd-6a7035f0bdc3~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 10" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="10">
+      <img src="https://media-api.xogrp.com/images/d7ea3b31-552d-4c2a-8193-4c24e726978e~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 11" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="11">
+      <img src="https://media-api.xogrp.com/images/a3a68521-2e80-4137-8cea-9613a95dff16~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 12" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+    <div class="gallery-item" data-index="12">
+      <img src="https://media-api.xogrp.com/images/8df45254-0a61-479a-9cba-fce960c68778~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 13" loading="lazy" />
+      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <button class="lb-arrow lb-prev" id="lbPrev" aria-label="Previous photo">&#8592;</button>
+  <div class="lb-img-wrap">
+    <img id="lbImg" src="" alt="" />
+  </div>
+  <button class="lb-arrow lb-next" id="lbNext" aria-label="Next photo">&#8594;</button>
+  <div class="lb-counter" id="lbCounter"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-script">N &amp; K</div>
+  <p class="foot-date">8 · 22 · 2026 &nbsp;·&nbsp; University Place, WA</p>
+</footer>
+
+<script>
+  /* ── STARFIELD CANVAS ─────────────────────────────────────── */
+  (function() {
+    const canvas = document.getElementById('starfield');
+    const ctx    = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const NUM_STARS = 125;
+    const stars = Array.from({ length: NUM_STARS }, () => ({
+      x:        Math.random(),
+      y:        Math.random(),
+      r:        Math.random() * 1.6 + 0.4,
+      baseAlpha:Math.random() * 0.55 + 0.25,
+      alpha:    0,
+      speed:    Math.random() * 0.018 + 0.005,
+      phase:    Math.random() * Math.PI * 2,
+      gold:     Math.random() < 0.22,
+      sparkTimer: Math.floor(Math.random() * 400),
+      sparking:   false,
+      sparkAlpha: 0,
+    }));
+
+    const shoots = [];
+    function spawnShoot() {
+      const fromLeft = Math.random() < 0.5;
+      const startX   = fromLeft ? -10 : Math.random() * canvas.width;
+      const startY   = fromLeft ? Math.random() * canvas.height * 0.6 : -10;
+      const angle    = (Math.random() * 30 + 20) * Math.PI / 180;
+      const spd      = Math.random() * 5 + 4;
+      shoots.push({
+        x: startX, y: startY,
+        vx: Math.cos(angle) * spd,
+        vy: Math.sin(angle) * spd,
+        len: Math.random() * 80 + 60,
+        alpha: 0, life: 0,
+        maxLife: Math.floor(Math.random() * 40 + 60),
+      });
+    }
+    let nextShoot = Date.now() + 1500 + Math.random() * 2000;
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const W = canvas.width, H = canvas.height;
+      const now = Date.now();
+
+      for (const s of stars) {
+        s.phase += s.speed;
+        s.alpha = s.baseAlpha * (0.3 + 0.7 * (Math.sin(s.phase) * 0.5 + 0.5));
+        s.sparkTimer--;
+        if (s.sparkTimer <= 0 && !s.sparking) {
+          s.sparking = true; s.sparkAlpha = 0;
+          s.sparkTimer = Math.floor(Math.random() * 600 + 300);
+        }
+        if (s.sparking) { s.sparkAlpha += 0.06; if (s.sparkAlpha >= 1) s.sparking = false; }
+        ctx.save();
+        ctx.globalAlpha = s.alpha;
+        ctx.beginPath();
+        ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = s.gold ? '#e8c87a' : '#ffffff';
+        ctx.fill();
+        if (s.sparking || s.sparkAlpha > 0) {
+          const sa = Math.sin(s.sparkAlpha * Math.PI) * 0.8;
+          ctx.globalAlpha = sa;
+          ctx.strokeStyle = s.gold ? '#f5e0a0' : '#ffffff';
+          ctx.lineWidth = 0.5;
+          const sx = s.x * W, sy = s.y * H, fl = s.r * 4;
+          ctx.beginPath(); ctx.moveTo(sx - fl, sy); ctx.lineTo(sx + fl, sy); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(sx, sy - fl); ctx.lineTo(sx, sy + fl); ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      if (now > nextShoot) {
+        spawnShoot();
+        nextShoot = now + 3000 + Math.random() * 5000;
+      }
+      for (let i = shoots.length - 1; i >= 0; i--) {
+        const sh = shoots[i];
+        sh.life++; sh.x += sh.vx; sh.y += sh.vy;
+        if (sh.life < 12)                      sh.alpha = Math.min(1, sh.life / 12);
+        if (sh.life > sh.maxLife - 20)         sh.alpha = Math.max(0, (sh.maxLife - sh.life) / 20);
+        if (sh.life > sh.maxLife || sh.x > W + 100 || sh.y > H + 100) { shoots.splice(i, 1); continue; }
+        const mag  = Math.sqrt(sh.vx * sh.vx + sh.vy * sh.vy);
+        const grad = ctx.createLinearGradient(sh.x, sh.y,
+          sh.x - (sh.vx / mag) * sh.len, sh.y - (sh.vy / mag) * sh.len);
+        grad.addColorStop(0,   `rgba(255,255,240,${sh.alpha * 0.9})`);
+        grad.addColorStop(0.3, `rgba(232,200,122,${sh.alpha * 0.5})`);
+        grad.addColorStop(1,   'rgba(232,200,122,0)');
+        ctx.save();
+        ctx.strokeStyle = grad; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(sh.x, sh.y);
+        ctx.lineTo(sh.x - (sh.vx / mag) * sh.len, sh.y - (sh.vy / mag) * sh.len);
+        ctx.stroke();
+        ctx.globalAlpha = sh.alpha;
+        ctx.beginPath(); ctx.arc(sh.x, sh.y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff'; ctx.fill();
+        ctx.restore();
+      }
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  })();
+
+  /* ── LIGHTBOX ─────────────────────────────────────────────── */
+  const FULL_SRCS = [
+    'https://media-api.xogrp.com/images/32070baa-499d-4b34-afe0-ad0dde03acbc~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/7125ef0a-47d6-4855-8155-1b7a470399fb~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/57925dfc-5b5b-40f7-a1ed-e7d19a4742a1~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/3cac0d82-9bbb-45af-9347-d93c4435f94f~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/3b2ebf4e-1091-4421-a5cf-c81109a276e8~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/51803c9c-6ad6-47f7-9830-3755f8408ec3~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/5d83ff33-50c9-48fa-8d98-d9b7ea2446a9~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/f9bcf8dc-78f8-4a17-a02e-cff0855d64d1~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/8bfc2bf5-906c-4e71-ae7f-4370e5885810~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/d337cb96-d76b-4683-a3bd-6a7035f0bdc3~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/d7ea3b31-552d-4c2a-8193-4c24e726978e~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/a3a68521-2e80-4137-8cea-9613a95dff16~rt_auto-rs_1200.h',
+    'https://media-api.xogrp.com/images/8df45254-0a61-479a-9cba-fce960c68778~rt_auto-rs_1200.h',
+  ];
+
+  const lightbox  = document.getElementById('lightbox');
+  const lbImg     = document.getElementById('lbImg');
+  const lbClose   = document.getElementById('lbClose');
+  const lbPrev    = document.getElementById('lbPrev');
+  const lbNext    = document.getElementById('lbNext');
+  const lbCounter = document.getElementById('lbCounter');
+  let currentIdx  = 0;
+
+  function openLightbox(idx) {
+    currentIdx = idx;
+    lbImg.src = FULL_SRCS[idx];
+    lbImg.alt = `Wedding photo ${idx + 1}`;
+    lbCounter.textContent = `${idx + 1} / ${FULL_SRCS.length}`;
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+    lbImg.src = '';
+  }
+
+  function navigate(dir) {
+    currentIdx = (currentIdx + dir + FULL_SRCS.length) % FULL_SRCS.length;
+    lbImg.src = FULL_SRCS[currentIdx];
+    lbImg.alt = `Wedding photo ${currentIdx + 1}`;
+    lbCounter.textContent = `${currentIdx + 1} / ${FULL_SRCS.length}`;
+  }
+
+  document.querySelectorAll('.gallery-item').forEach(item => {
+    item.addEventListener('click', () => openLightbox(parseInt(item.dataset.index, 10)));
+  });
+
+  lbClose.addEventListener('click', closeLightbox);
+  lbPrev.addEventListener('click', () => navigate(-1));
+  lbNext.addEventListener('click', () => navigate(1));
+
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape')     closeLightbox();
+    if (e.key === 'ArrowLeft')  navigate(-1);
+    if (e.key === 'ArrowRight') navigate(1);
+  });
+</script>
+</body>
+</html>
