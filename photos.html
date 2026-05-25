@@ -6,27 +6,29 @@
   <title>Photos — Nathan & Kasey · August 22, 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&family=Great+Vibes&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&family=Great+Vibes&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy:   #192035;
-      --navy2:  #0e1525;
-      --gold:   #c9a84c;
-      --gold2:  #e8c87a;
-      --goldDim:rgba(201,168,76,0.3);
-      --off:    #f0ead8;
-      --dim:    rgba(240,234,216,0.6);
-      --serif:  'Cormorant Garamond', Georgia, serif;
-      --script: 'Great Vibes', cursive;
-      --sans:   'Jost', sans-serif;
+      --navy:    #192035;
+      --navy2:   #0e1525;
+      --navy3:   #1e2d48;
+      --gold:    #c9a84c;
+      --gold2:   #e8c87a;
+      --goldDim: rgba(201,168,76,0.28);
+      --off:     #f0ead8;
+      --dim:     rgba(240,234,216,0.55);
+      --red:     #d95f5f;
+      --green:   #5ecb8a;
+      --serif:   'Cormorant Garamond', Georgia, serif;
+      --script:  'Great Vibes', cursive;
+      --sans:    'Jost', sans-serif;
     }
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
     html { scroll-behavior:smooth; }
     body { background:var(--navy); color:var(--off); font-family:var(--sans); font-weight:300; line-height:1.7; overflow-x:hidden; }
-
     #starfield { position:fixed; inset:0; z-index:0; pointer-events:none; }
 
-    /* NAV */
+    /* ── NAV ── */
     nav {
       position:fixed; top:0; left:0; right:0; z-index:100;
       display:flex; align-items:center; justify-content:center; gap:2.5rem;
@@ -39,138 +41,289 @@
     nav a.active { color:var(--gold2); }
     .nav-mono { font-family:var(--script); font-size:1.5rem; color:var(--gold); text-decoration:none; }
 
-    /* PAGE HEADER */
+    /* ── PAGE HEADER ── */
     .page-header {
       min-height:38vh; position:relative;
       display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
       text-align:center; padding:7rem 2rem 3.5rem; overflow:hidden;
     }
-    .page-header-glow {
-      position:absolute; inset:0; pointer-events:none;
-      background:radial-gradient(ellipse 70% 50% at 50% 60%, rgba(201,168,76,.07) 0%, transparent 70%);
-    }
+    .page-header-glow { position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse 70% 50% at 50% 60%, rgba(201,168,76,.07) 0%, transparent 70%); }
     .page-header-content { position:relative; z-index:1; }
     .hero-eyebrow { font-size:.65rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); margin-bottom:1rem; animation:fadeUp 1s .1s ease both; }
     .page-title { font-family:var(--script); font-size:clamp(3.5rem,10vw,6rem); color:var(--off); line-height:1; animation:fadeUp 1s .2s ease both; }
     .hero-rule { width:80px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:1.5rem auto 0; animation:fadeUp 1s .3s ease both; }
 
-    /* GALLERY */
-    .gallery-wrap {
-      max-width:1100px; margin:0 auto;
-      padding:3.5rem 2rem 6rem;
-      position:relative; z-index:1;
-    }
-    .gallery-count {
-      text-align:center;
-      font-size:.62rem; letter-spacing:.22em; text-transform:uppercase;
-      color:var(--gold); opacity:.6; margin-bottom:2.5rem;
-      animation:fadeUp 1s .4s ease both;
-    }
-    .gallery-grid {
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:10px;
-      animation:fadeUp 1s .5s ease both;
-    }
-    .gallery-item {
-      position:relative; overflow:hidden; cursor:pointer;
-      aspect-ratio:1/1;
-      border:1px solid var(--goldDim);
-      background:var(--navy2);
-    }
-    .gallery-item::before {
-      content:''; position:absolute; top:0; left:0; right:0; height:2px;
-      background:linear-gradient(90deg,transparent,var(--gold),transparent);
-      opacity:0; transition:opacity .3s; z-index:2;
-    }
+    /* ── GALLERY ── */
+    .gallery-wrap { max-width:1100px; margin:0 auto; padding:3.5rem 2rem 6rem; position:relative; z-index:1; }
+    .gallery-count { text-align:center; font-size:.62rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); opacity:.6; margin-bottom:2.5rem; animation:fadeUp 1s .4s ease both; }
+    .gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; animation:fadeUp 1s .5s ease both; }
+    .gallery-item { position:relative; overflow:hidden; cursor:pointer; aspect-ratio:1/1; border:1px solid var(--goldDim); background:var(--navy2); }
+    .gallery-item::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); opacity:0; transition:opacity .3s; z-index:2; }
     .gallery-item:hover::before { opacity:1; }
-    .gallery-item img {
-      display:block; width:100%; height:100%;
-      object-fit:cover;
-      transition:transform .45s ease, opacity .3s;
-      opacity:.85;
-    }
+    .gallery-item img { display:block; width:100%; height:100%; object-fit:cover; transition:transform .45s ease,opacity .3s; opacity:.85; }
     .gallery-item:hover img { transform:scale(1.05); opacity:1; }
-    .gallery-overlay {
-      position:absolute; inset:0; z-index:1;
-      display:flex; align-items:center; justify-content:center;
-      opacity:0; transition:opacity .3s;
-      background:rgba(14,21,37,.45);
-    }
+    .gallery-overlay { position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .3s; background:rgba(14,21,37,.45); }
     .gallery-item:hover .gallery-overlay { opacity:1; }
     .gallery-overlay svg { width:32px; height:32px; }
 
-    /* LIGHTBOX */
-    .lightbox {
+    /* Admin delete badge — only shown in admin mode */
+    .admin-delete-btn {
+      display:none;
+      position:absolute; top:6px; right:6px; z-index:10;
+      width:26px; height:26px; border-radius:50%;
+      background:rgba(9,14,25,.8); border:1px solid rgba(217,95,95,.5);
+      color:var(--red); font-size:.9rem; line-height:26px; text-align:center;
+      cursor:pointer; transition:background .2s, border-color .2s;
+    }
+    .admin-delete-btn:hover { background:rgba(217,95,95,.2); border-color:var(--red); }
+    body.admin-mode .admin-delete-btn { display:block; }
+    body.admin-mode .gallery-item { cursor:default; }
+    body.admin-mode .gallery-item img { cursor:pointer; } /* still openable */
+
+    /* Gallery empty state */
+    .gallery-empty { text-align:center; padding:4rem 2rem; color:var(--dim); border:1px dashed var(--goldDim); grid-column:1/-1; }
+    .gallery-empty-icon { font-size:2.5rem; opacity:.25; margin-bottom:1rem; }
+
+    /* ── HIDDEN ADMIN TRIGGER ── */
+    /* Small camera icon, bottom-right, very subtle */
+    #adminTrigger {
+      position:fixed; bottom:1.6rem; right:1.6rem; z-index:90;
+      width:34px; height:34px;
+      display:flex; align-items:center; justify-content:center;
+      opacity:.18; cursor:pointer;
+      transition:opacity .35s;
+      border-radius:50%;
+    }
+    #adminTrigger:hover { opacity:.55; }
+    #adminTrigger svg { width:20px; height:20px; }
+
+    /* ── PIN MODAL ── */
+    .modal-backdrop {
       position:fixed; inset:0; z-index:500;
-      background:rgba(9,14,25,.96);
+      background:rgba(9,14,25,.92); backdrop-filter:blur(8px);
       display:flex; align-items:center; justify-content:center;
       opacity:0; pointer-events:none;
       transition:opacity .3s ease;
     }
+    .modal-backdrop.open { opacity:1; pointer-events:all; }
+
+    .pin-box {
+      text-align:center;
+      animation:fadeUp .5s ease both;
+      padding:1rem;
+    }
+    .pin-monogram { font-family:var(--script); font-size:3rem; color:var(--gold); line-height:1; margin-bottom:.3rem; }
+    .pin-eyebrow { font-size:.58rem; letter-spacing:.25em; text-transform:uppercase; color:var(--gold); opacity:.65; margin-bottom:2rem; }
+    .pin-label { font-size:.62rem; letter-spacing:.18em; text-transform:uppercase; color:var(--dim); margin-bottom:1.1rem; }
+
+    .pin-dots { display:flex; gap:12px; justify-content:center; margin-bottom:1.8rem; }
+    .pin-dot {
+      width:11px; height:11px; border-radius:50%;
+      border:1.5px solid var(--goldDim); background:transparent;
+      transition:background .2s, border-color .2s, box-shadow .2s;
+    }
+    .pin-dot.filled { background:var(--gold); border-color:var(--gold); box-shadow:0 0 7px rgba(201,168,76,.55); }
+    .pin-dot.error  { background:var(--red); border-color:var(--red); animation:shake .35s ease; }
+
+    .pin-pad { display:grid; grid-template-columns:repeat(3,62px); gap:9px; justify-content:center; }
+    .pin-key {
+      height:62px; display:flex; align-items:center; justify-content:center;
+      border:1px solid var(--goldDim); background:rgba(255,255,255,.03);
+      border-radius:3px; font-family:var(--serif); font-size:1.45rem; color:var(--off);
+      cursor:pointer; user-select:none;
+      transition:background .15s, border-color .15s, transform .1s;
+    }
+    .pin-key:hover  { background:rgba(201,168,76,.1); border-color:var(--gold); }
+    .pin-key:active { transform:scale(.92); }
+    .pin-key.del    { font-family:var(--sans); font-size:.85rem; color:var(--dim); }
+    .pin-key.empty  { border:none; background:transparent; cursor:default; pointer-events:none; }
+
+    .pin-error-msg { margin-top:1.1rem; font-size:.62rem; letter-spacing:.15em; text-transform:uppercase; color:var(--red); opacity:0; transition:opacity .3s; }
+    .pin-error-msg.show { opacity:1; }
+
+    .pin-close {
+      position:absolute; top:1.2rem; right:1.4rem;
+      width:36px; height:36px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(255,255,255,.04); border:1px solid var(--goldDim);
+      color:var(--dim); font-size:1.2rem; cursor:pointer;
+      transition:color .2s, border-color .2s;
+    }
+    .pin-close:hover { color:var(--off); border-color:rgba(240,234,216,.3); }
+
+    /* ── ADMIN PANEL (slides up from bottom) ── */
+    #adminPanel {
+      position:fixed; left:0; right:0; bottom:0; z-index:400;
+      background:var(--navy2);
+      border-top:1px solid var(--goldDim);
+      transform:translateY(100%);
+      transition:transform .45s cubic-bezier(.22,1,.36,1);
+      max-height:85vh; overflow-y:auto;
+    }
+    #adminPanel.open { transform:translateY(0); }
+
+    .ap-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1rem 1.5rem;
+      border-bottom:1px solid var(--goldDim);
+      position:sticky; top:0; background:var(--navy2); z-index:2;
+    }
+    .ap-header::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+    .ap-title { font-size:.62rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); }
+    .ap-close {
+      width:32px; height:32px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(255,255,255,.04); border:1px solid var(--goldDim);
+      color:var(--dim); font-size:1.1rem; cursor:pointer;
+      transition:color .2s, border-color .2s;
+    }
+    .ap-close:hover { color:var(--off); border-color:rgba(240,234,216,.3); }
+
+    .ap-body { padding:1.5rem; max-width:700px; margin:0 auto; }
+
+    /* Tabs */
+    .ap-tabs { display:flex; border:1px solid var(--goldDim); border-radius:3px; overflow:hidden; margin-bottom:1.5rem; }
+    .ap-tab {
+      flex:1; padding:.5rem; text-align:center;
+      font-size:.6rem; letter-spacing:.16em; text-transform:uppercase;
+      cursor:pointer; background:transparent; color:var(--dim);
+      border:none; transition:background .15s, color .15s;
+    }
+    .ap-tab.active { background:rgba(201,168,76,.14); color:var(--gold); }
+
+    /* Form elements */
+    .ap-label { display:block; font-size:.58rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin-bottom:.45rem; }
+    .ap-input, .ap-textarea {
+      width:100%; background:rgba(255,255,255,.04); border:1px solid var(--goldDim);
+      border-radius:3px; color:var(--off); font-family:var(--sans);
+      font-size:.82rem; font-weight:300; padding:.6rem .85rem; outline:none;
+      transition:border-color .2s, background .2s; margin-bottom:1rem;
+    }
+    .ap-input:focus, .ap-textarea:focus { border-color:var(--gold); background:rgba(255,255,255,.06); }
+    .ap-input::placeholder, .ap-textarea::placeholder { color:rgba(240,234,216,.25); }
+    .ap-textarea { min-height:60px; resize:vertical; line-height:1.5; }
+
+    /* Drop zone */
+    .ap-drop {
+      border:1.5px dashed var(--goldDim); border-radius:3px;
+      padding:1.8rem 1rem; text-align:center; cursor:pointer;
+      transition:border-color .2s, background .2s; position:relative; margin-bottom:1rem;
+    }
+    .ap-drop:hover, .ap-drop.over { border-color:var(--gold); background:rgba(201,168,76,.04); }
+    .ap-drop input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+    .ap-drop-icon { font-size:1.6rem; margin-bottom:.4rem; opacity:.4; }
+    .ap-drop-text { font-size:.72rem; color:var(--dim); }
+    .ap-drop-text span { color:var(--gold); }
+
+    /* Preview thumbnails */
+    .ap-preview { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1rem; }
+    .ap-thumb {
+      width:52px; height:52px; border:1px solid var(--goldDim); border-radius:2px;
+      overflow:hidden; position:relative; background:var(--navy2);
+      flex-shrink:0;
+    }
+    .ap-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .ap-thumb-rm {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      background:rgba(9,14,25,.7); opacity:0; transition:opacity .2s;
+      cursor:pointer; font-size:.85rem; color:var(--red);
+    }
+    .ap-thumb:hover .ap-thumb-rm { opacity:1; }
+
+    /* Buttons */
+    .ap-btn {
+      width:100%; padding:.7rem; background:rgba(201,168,76,.13);
+      border:1px solid var(--gold); border-radius:3px; color:var(--gold2);
+      font-family:var(--sans); font-size:.66rem; font-weight:400;
+      letter-spacing:.2em; text-transform:uppercase; cursor:pointer;
+      transition:background .2s, color .2s; margin-bottom:.6rem;
+    }
+    .ap-btn:hover { background:rgba(201,168,76,.25); color:var(--off); }
+    .ap-btn:disabled { opacity:.35; cursor:not-allowed; }
+    .ap-btn.secondary { background:transparent; border-color:var(--goldDim); color:var(--dim); }
+    .ap-btn.secondary:hover { border-color:var(--gold); color:var(--gold); background:rgba(201,168,76,.06); }
+    .ap-btn.danger { background:rgba(217,95,95,.08); border-color:rgba(217,95,95,.4); color:var(--red); }
+    .ap-btn.danger:hover { background:rgba(217,95,95,.18); border-color:var(--red); }
+
+    /* Admin bar — shown at top when in admin mode */
+    #adminBar {
+      position:fixed; top:0; left:0; right:0; z-index:150;
+      padding:.5rem 1.5rem;
+      background:rgba(201,168,76,.12);
+      border-bottom:1px solid rgba(201,168,76,.35);
+      display:flex; align-items:center; justify-content:space-between;
+      font-size:.6rem; letter-spacing:.18em; text-transform:uppercase;
+      color:var(--gold);
+      transform:translateY(-100%);
+      transition:transform .35s ease;
+    }
+    #adminBar.show { transform:translateY(0); }
+    #adminBar.show ~ nav { top:34px; }
+    .ab-actions { display:flex; gap:.8rem; }
+    .ab-btn {
+      background:none; border:1px solid var(--goldDim); color:var(--dim);
+      font-family:var(--sans); font-size:.58rem; letter-spacing:.15em; text-transform:uppercase;
+      padding:.25rem .7rem; border-radius:2px; cursor:pointer;
+      transition:color .2s, border-color .2s;
+    }
+    .ab-btn:hover { color:var(--gold); border-color:var(--gold); }
+
+    /* ── LIGHTBOX ── */
+    .lightbox { position:fixed; inset:0; z-index:500; background:rgba(9,14,25,.96); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .3s ease; }
     .lightbox.open { opacity:1; pointer-events:all; }
-    .lb-img-wrap {
-      position:relative; max-width:min(90vw, 900px);
-      max-height:85vh;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .lb-img-wrap img {
-      display:block; max-width:100%; max-height:85vh;
-      object-fit:contain;
-      border:1px solid var(--goldDim);
-      box-shadow:0 0 60px rgba(201,168,76,.12);
-    }
-    .lb-close {
-      position:fixed; top:1.5rem; right:1.8rem;
-      width:44px; height:44px;
-      display:flex; align-items:center; justify-content:center;
-      cursor:pointer; z-index:10;
-      color:var(--gold); font-size:1.8rem; font-weight:300;
-      opacity:.7; transition:opacity .2s;
-      background:rgba(14,21,37,.7); border:1px solid var(--goldDim); border-radius:50%;
-    }
+    .lb-img-wrap { position:relative; max-width:min(90vw,900px); max-height:85vh; display:flex; align-items:center; justify-content:center; }
+    .lb-img-wrap img { display:block; max-width:100%; max-height:85vh; object-fit:contain; border:1px solid var(--goldDim); box-shadow:0 0 60px rgba(201,168,76,.12); }
+    .lb-close { position:fixed; top:1.5rem; right:1.8rem; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; color:var(--gold); font-size:1.8rem; font-weight:300; opacity:.7; transition:opacity .2s; background:rgba(14,21,37,.7); border:1px solid var(--goldDim); border-radius:50%; }
     .lb-close:hover { opacity:1; }
-    .lb-arrow {
-      position:fixed; top:50%; transform:translateY(-50%);
-      width:48px; height:48px;
-      display:flex; align-items:center; justify-content:center;
-      cursor:pointer; z-index:10;
-      color:var(--off); font-size:1.4rem;
-      opacity:.5; transition:opacity .2s;
-      background:rgba(14,21,37,.6); border:1px solid var(--goldDim); border-radius:50%;
-    }
+    .lb-arrow { position:fixed; top:50%; transform:translateY(-50%); width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; color:var(--off); font-size:1.4rem; opacity:.5; transition:opacity .2s; background:rgba(14,21,37,.6); border:1px solid var(--goldDim); border-radius:50%; }
     .lb-arrow:hover { opacity:1; }
     .lb-prev { left:1.2rem; }
     .lb-next { right:1.2rem; }
-    .lb-counter {
-      position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%);
-      font-size:.6rem; letter-spacing:.2em; text-transform:uppercase;
-      color:var(--gold); opacity:.6;
-    }
+    .lb-counter { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); opacity:.6; }
 
-    /* FOOTER */
+    /* ── TOAST ── */
+    #toast {
+      position:fixed; bottom:5rem; left:50%; transform:translateX(-50%) translateY(12px);
+      background:rgba(14,21,37,.97); border:1px solid var(--goldDim);
+      border-radius:3px; padding:.6rem 1.3rem;
+      font-size:.68rem; letter-spacing:.1em; color:var(--off);
+      opacity:0; transition:opacity .3s, transform .3s;
+      pointer-events:none; white-space:nowrap; z-index:600;
+    }
+    #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    #toast.success { border-color:var(--green); color:var(--green); }
+    #toast.err     { border-color:var(--red);   color:var(--red); }
+
+    /* ── FOOTER ── */
     footer { text-align:center; padding:4rem 2rem 3rem; border-top:1px solid var(--goldDim); position:relative; z-index:1; }
     footer::before { content:''; display:block; width:80px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:0 auto 2rem; }
     .foot-script { font-family:var(--script); font-size:3.5rem; color:var(--gold); }
     .foot-date { font-size:.65rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); opacity:.55; margin-top:.5rem; }
 
-    /* ANIMS */
     @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes shake  { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
 
     @media(max-width:700px){
       nav{gap:1rem;}
-      .gallery-grid { grid-template-columns: repeat(2, 1fr); gap:6px; }
-      .lb-prev { left:.5rem; }
-      .lb-next { right:.5rem; }
-    }
-    @media(max-width:400px){
-      .gallery-grid { grid-template-columns: 1fr 1fr; gap:4px; }
+      .gallery-grid{grid-template-columns:repeat(2,1fr);gap:6px;}
+      .lb-prev{left:.5rem;} .lb-next{right:.5rem;}
+      .pin-pad{grid-template-columns:repeat(3,56px);}
+      .pin-key{height:56px;}
     }
   </style>
 </head>
 <body>
 
 <canvas id="starfield"></canvas>
+
+<!-- Admin mode bar (visible once unlocked) -->
+<div id="adminBar">
+  <span>✦ Admin Mode</span>
+  <div class="ab-actions">
+    <button class="ab-btn" id="abAddBtn">+ Add Photos</button>
+    <button class="ab-btn" id="abExitBtn">Exit Admin</button>
+  </div>
+</div>
 
 <nav>
   <a href="index.html">Home</a>
@@ -192,86 +345,8 @@
 
 <!-- GALLERY -->
 <div class="gallery-wrap">
-  <p class="gallery-count">13 photos</p>
-  <div class="gallery-grid" id="galleryGrid">
-
-    <div class="gallery-item" data-index="0">
-      <img src="https://media-api.xogrp.com/images/32070baa-499d-4b34-afe0-ad0dde03acbc~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 1" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="1">
-      <img src="https://media-api.xogrp.com/images/7125ef0a-47d6-4855-8155-1b7a470399fb~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 2" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="2">
-      <img src="https://media-api.xogrp.com/images/57925dfc-5b5b-40f7-a1ed-e7d19a4742a1~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 3" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="3">
-      <img src="https://media-api.xogrp.com/images/3cac0d82-9bbb-45af-9347-d93c4435f94f~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 4" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="4">
-      <img src="https://media-api.xogrp.com/images/3b2ebf4e-1091-4421-a5cf-c81109a276e8~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 5" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="5">
-      <img src="https://media-api.xogrp.com/images/51803c9c-6ad6-47f7-9830-3755f8408ec3~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 6" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="6">
-      <img src="https://media-api.xogrp.com/images/5d83ff33-50c9-48fa-8d98-d9b7ea2446a9~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 7" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="7">
-      <img src="https://media-api.xogrp.com/images/f9bcf8dc-78f8-4a17-a02e-cff0855d64d1~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 8" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="8">
-      <img src="https://media-api.xogrp.com/images/8bfc2bf5-906c-4e71-ae7f-4370e5885810~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 9" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="9">
-      <img src="https://media-api.xogrp.com/images/d337cb96-d76b-4683-a3bd-6a7035f0bdc3~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 10" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="10">
-      <img src="https://media-api.xogrp.com/images/d7ea3b31-552d-4c2a-8193-4c24e726978e~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 11" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="11">
-      <img src="https://media-api.xogrp.com/images/a3a68521-2e80-4137-8cea-9613a95dff16~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 12" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-    <div class="gallery-item" data-index="12">
-      <img src="https://media-api.xogrp.com/images/8df45254-0a61-479a-9cba-fce960c68778~rt_auto-sc_640.640-rs_640.h" alt="Wedding photo 13" loading="lazy" />
-      <div class="gallery-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-
-  </div>
-</div>
-
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
-  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
-  <button class="lb-arrow lb-prev" id="lbPrev" aria-label="Previous photo">&#8592;</button>
-  <div class="lb-img-wrap">
-    <img id="lbImg" src="" alt="" />
-  </div>
-  <button class="lb-arrow lb-next" id="lbNext" aria-label="Next photo">&#8594;</button>
-  <div class="lb-counter" id="lbCounter"></div>
+  <p class="gallery-count" id="galleryCount">Loading…</p>
+  <div class="gallery-grid" id="galleryGrid"></div>
 </div>
 
 <!-- FOOTER -->
@@ -280,179 +355,607 @@
   <p class="foot-date">8 · 22 · 2026 &nbsp;·&nbsp; University Place, WA</p>
 </footer>
 
+<!-- Hidden admin trigger — small camera icon bottom right -->
+<div id="adminTrigger" title="">
+  <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+    <circle cx="12" cy="13" r="4"/>
+  </svg>
+</div>
+
+<!-- PIN MODAL -->
+<div class="modal-backdrop" id="pinModal">
+  <div class="pin-box">
+    <div class="pin-monogram">N&K</div>
+    <p class="pin-eyebrow">Photo Administration</p>
+    <p class="pin-label">Enter PIN to continue</p>
+    <div class="pin-dots" id="pinDots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-pad" id="pinPad">
+      <div class="pin-key" data-k="1">1</div>
+      <div class="pin-key" data-k="2">2</div>
+      <div class="pin-key" data-k="3">3</div>
+      <div class="pin-key" data-k="4">4</div>
+      <div class="pin-key" data-k="5">5</div>
+      <div class="pin-key" data-k="6">6</div>
+      <div class="pin-key" data-k="7">7</div>
+      <div class="pin-key" data-k="8">8</div>
+      <div class="pin-key" data-k="9">9</div>
+      <div class="pin-key empty"></div>
+      <div class="pin-key" data-k="0">0</div>
+      <div class="pin-key del" data-k="del">⌫</div>
+    </div>
+    <p class="pin-error-msg" id="pinError">Incorrect PIN</p>
+  </div>
+  <button class="pin-close" id="pinClose">&times;</button>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
+  <div class="ap-header">
+    <span class="ap-title">Add Photos to Gallery</span>
+    <button class="ap-close" id="apClose">&times;</button>
+  </div>
+  <div class="ap-body">
+
+    <!-- Tabs -->
+    <div class="ap-tabs">
+      <button class="ap-tab active" id="tabUrl">Image URL</button>
+      <button class="ap-tab" id="tabUpload">Upload File</button>
+    </div>
+
+    <!-- URL mode -->
+    <div id="modeUrl">
+      <label class="ap-label">Image URL(s) — one per line</label>
+      <textarea class="ap-textarea" id="urlInput" placeholder="https://example.com/photo.jpg&#10;https://example.com/photo2.jpg" rows="4"></textarea>
+      <div class="ap-preview" id="urlPreview"></div>
+    </div>
+
+    <!-- Upload mode -->
+    <div id="modeUpload" style="display:none">
+      <label class="ap-label">Upload Images</label>
+      <div class="ap-drop" id="dropZone">
+        <input type="file" id="fileInput" accept="image/*" multiple />
+        <div class="ap-drop-icon">📷</div>
+        <p class="ap-drop-text">Drop images here or <span>browse files</span></p>
+      </div>
+      <div class="ap-preview" id="uploadPreview"></div>
+    </div>
+
+    <!-- Caption -->
+    <label class="ap-label" for="captionInput">Caption <span style="opacity:.45;font-size:.55rem;">(optional)</span></label>
+    <input class="ap-input" id="captionInput" type="text" placeholder="e.g. Reception, August 22" maxlength="80" />
+
+    <button class="ap-btn" id="addPhotosBtn">Add to Gallery</button>
+
+    <hr style="border:none;border-top:1px solid var(--goldDim);margin:1.2rem 0;" />
+
+    <button class="ap-btn secondary" id="exportBtn">Export Gallery JSON</button>
+    <button class="ap-btn secondary" id="importJsonBtn">Import Gallery JSON</button>
+    <input type="file" id="importFileInput" accept=".json" style="display:none" />
+    <button class="ap-btn danger" id="clearAllBtn">Clear All Added Photos</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <button class="lb-arrow lb-prev" id="lbPrev" aria-label="Previous">&#8592;</button>
+  <div class="lb-img-wrap"><img id="lbImg" src="" alt="" /></div>
+  <button class="lb-arrow lb-next" id="lbNext" aria-label="Next">&#8594;</button>
+  <div class="lb-counter" id="lbCounter"></div>
+</div>
+
+<div id="toast"></div>
+
 <script>
-  /* ── STARFIELD CANVAS ─────────────────────────────────────── */
-  (function() {
-    const canvas = document.getElementById('starfield');
-    const ctx    = canvas.getContext('2d');
+/* ═══════════════════════════════════════════════════════════
+   CONSTANTS
+═══════════════════════════════════════════════════════════ */
+const CORRECT_PIN  = '0502';
+const STORAGE_KEY  = 'nk_gallery_photos';
+const SESSION_KEY  = 'nk_admin_session';
 
-    function resize() {
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
+/* ── Hardcoded originals (always shown, never deletable) ── */
+const ORIGINAL_PHOTOS = [
+  { id:'o0',  src:'https://media-api.xogrp.com/images/32070baa-499d-4b34-afe0-ad0dde03acbc~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/32070baa-499d-4b34-afe0-ad0dde03acbc~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o1',  src:'https://media-api.xogrp.com/images/7125ef0a-47d6-4855-8155-1b7a470399fb~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/7125ef0a-47d6-4855-8155-1b7a470399fb~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o2',  src:'https://media-api.xogrp.com/images/57925dfc-5b5b-40f7-a1ed-e7d19a4742a1~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/57925dfc-5b5b-40f7-a1ed-e7d19a4742a1~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o3',  src:'https://media-api.xogrp.com/images/3cac0d82-9bbb-45af-9347-d93c4435f94f~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/3cac0d82-9bbb-45af-9347-d93c4435f94f~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o4',  src:'https://media-api.xogrp.com/images/3b2ebf4e-1091-4421-a5cf-c81109a276e8~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/3b2ebf4e-1091-4421-a5cf-c81109a276e8~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o5',  src:'https://media-api.xogrp.com/images/51803c9c-6ad6-47f7-9830-3755f8408ec3~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/51803c9c-6ad6-47f7-9830-3755f8408ec3~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o6',  src:'https://media-api.xogrp.com/images/5d83ff33-50c9-48fa-8d98-d9b7ea2446a9~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/5d83ff33-50c9-48fa-8d98-d9b7ea2446a9~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o7',  src:'https://media-api.xogrp.com/images/f9bcf8dc-78f8-4a17-a02e-cff0855d64d1~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/f9bcf8dc-78f8-4a17-a02e-cff0855d64d1~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o8',  src:'https://media-api.xogrp.com/images/8bfc2bf5-906c-4e71-ae7f-4370e5885810~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/8bfc2bf5-906c-4e71-ae7f-4370e5885810~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o9',  src:'https://media-api.xogrp.com/images/d337cb96-d76b-4683-a3bd-6a7035f0bdc3~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/d337cb96-d76b-4683-a3bd-6a7035f0bdc3~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o10', src:'https://media-api.xogrp.com/images/d7ea3b31-552d-4c2a-8193-4c24e726978e~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/d7ea3b31-552d-4c2a-8193-4c24e726978e~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o11', src:'https://media-api.xogrp.com/images/a3a68521-2e80-4137-8cea-9613a95dff16~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/a3a68521-2e80-4137-8cea-9613a95dff16~rt_auto-rs_1200.h',  caption:'', original:true },
+  { id:'o12', src:'https://media-api.xogrp.com/images/8df45254-0a61-479a-9cba-fce960c68778~rt_auto-sc_640.640-rs_640.h',  full:'https://media-api.xogrp.com/images/8df45254-0a61-479a-9cba-fce960c68778~rt_auto-rs_1200.h',  caption:'', original:true },
+];
+
+/* ═══════════════════════════════════════════════════════════
+   STORAGE
+═══════════════════════════════════════════════════════════ */
+function loadAdded() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch(e) { return []; }
+}
+function saveAdded(arr) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+}
+function allPhotos() {
+  const added = loadAdded();
+  // Added photos come first (newest), then originals
+  return [...added.slice().reverse(), ...ORIGINAL_PHOTOS];
+}
+function genId() { return 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+
+/* ═══════════════════════════════════════════════════════════
+   GALLERY RENDER
+═══════════════════════════════════════════════════════════ */
+let currentPhotos = [];
+
+function renderGallery() {
+  currentPhotos = allPhotos();
+  const grid    = document.getElementById('galleryGrid');
+  const countEl = document.getElementById('galleryCount');
+  const isAdmin = document.body.classList.contains('admin-mode');
+
+  countEl.textContent = `${currentPhotos.length} photo${currentPhotos.length !== 1 ? 's' : ''}`;
+
+  if (!currentPhotos.length) {
+    grid.innerHTML = `<div class="gallery-empty"><div class="gallery-empty-icon">🌙</div><p>No photos yet.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = currentPhotos.map((p, i) => `
+    <div class="gallery-item" data-idx="${i}">
+      <img src="${esc(p.src)}" alt="${p.caption ? esc(p.caption) : 'Wedding photo ' + (i+1)}" loading="lazy"
+           onerror="this.style.opacity='.15'" />
+      <div class="gallery-overlay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e8c87a" stroke-width="1.5">
+          <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+        </svg>
+      </div>
+      ${!p.original ? `<button class="admin-delete-btn" data-id="${p.id}" title="Remove photo">✕</button>` : ''}
+    </div>
+  `).join('');
+
+  // Click to open lightbox (only when not clicking delete button)
+  grid.querySelectorAll('.gallery-item').forEach(item => {
+    item.addEventListener('click', e => {
+      if (e.target.closest('.admin-delete-btn')) return;
+      openLightbox(parseInt(item.dataset.idx, 10));
+    });
+  });
+
+  // Delete buttons
+  grid.querySelectorAll('.admin-delete-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      deletePhoto(btn.dataset.id);
+    });
+  });
+}
+
+function deletePhoto(id) {
+  const added = loadAdded().filter(p => p.id !== id);
+  saveAdded(added);
+  renderGallery();
+  showToast('Photo removed.');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LIGHTBOX
+═══════════════════════════════════════════════════════════ */
+const lightbox  = document.getElementById('lightbox');
+const lbImg     = document.getElementById('lbImg');
+const lbCounter = document.getElementById('lbCounter');
+let lbIdx = 0;
+
+function fullSrc(p) {
+  if (p.full) return p.full;
+  // For uploaded data URLs or external URLs just use src
+  return p.src;
+}
+
+function openLightbox(idx) {
+  lbIdx = idx;
+  const p = currentPhotos[idx];
+  lbImg.src = fullSrc(p);
+  lbImg.alt = p.caption || `Photo ${idx+1}`;
+  lbCounter.textContent = `${idx+1} / ${currentPhotos.length}`;
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  document.body.style.overflow = '';
+  lbImg.src = '';
+}
+function lbNavigate(dir) {
+  lbIdx = (lbIdx + dir + currentPhotos.length) % currentPhotos.length;
+  const p = currentPhotos[lbIdx];
+  lbImg.src = fullSrc(p);
+  lbImg.alt = p.caption || `Photo ${lbIdx+1}`;
+  lbCounter.textContent = `${lbIdx+1} / ${currentPhotos.length}`;
+}
+
+document.getElementById('lbClose').addEventListener('click', closeLightbox);
+document.getElementById('lbPrev').addEventListener('click', () => lbNavigate(-1));
+document.getElementById('lbNext').addEventListener('click', () => lbNavigate(1));
+lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (!lightbox.classList.contains('open')) return;
+  if (e.key === 'Escape')     closeLightbox();
+  if (e.key === 'ArrowLeft')  lbNavigate(-1);
+  if (e.key === 'ArrowRight') lbNavigate(1);
+});
+// Touch swipe
+let touchX = 0;
+lightbox.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive:true });
+lightbox.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) lbNavigate(dx < 0 ? 1 : -1);
+});
+
+/* ═══════════════════════════════════════════════════════════
+   PIN LOGIC
+═══════════════════════════════════════════════════════════ */
+let pinEntry = '';
+const pinModal = document.getElementById('pinModal');
+
+function updateDots() {
+  for (let i = 0; i < 4; i++) {
+    const d = document.getElementById(`pd${i}`);
+    d.classList.remove('error');
+    d.classList.toggle('filled', i < pinEntry.length);
+  }
+}
+function pinErr() {
+  pinEntry = '';
+  for (let i = 0; i < 4; i++) {
+    const d = document.getElementById(`pd${i}`);
+    d.classList.remove('filled');
+    d.classList.add('error');
+  }
+  const msg = document.getElementById('pinError');
+  msg.classList.add('show');
+  setTimeout(() => {
+    msg.classList.remove('show');
+    for (let i = 0; i < 4; i++) document.getElementById(`pd${i}`).classList.remove('error');
+  }, 1400);
+}
+function pinSuccess() {
+  sessionStorage.setItem(SESSION_KEY, '1');
+  closePinModal();
+  enterAdminMode();
+}
+function openPinModal() {
+  pinEntry = ''; updateDots();
+  document.getElementById('pinError').classList.remove('show');
+  pinModal.classList.add('open');
+}
+function closePinModal() {
+  pinModal.classList.remove('open');
+  pinEntry = '';
+}
+
+document.getElementById('adminTrigger').addEventListener('click', () => {
+  if (document.body.classList.contains('admin-mode')) {
+    openAdminPanel(); // already authed this session
+  } else if (sessionStorage.getItem(SESSION_KEY)) {
+    enterAdminMode();
+  } else {
+    openPinModal();
+  }
+});
+
+document.getElementById('pinClose').addEventListener('click', closePinModal);
+pinModal.addEventListener('click', e => { if (e.target === pinModal) closePinModal(); });
+
+document.getElementById('pinPad').addEventListener('click', e => {
+  const key = e.target.closest('.pin-key');
+  if (!key || key.classList.contains('empty')) return;
+  const k = key.dataset.k;
+  if (k === 'del') { pinEntry = pinEntry.slice(0,-1); }
+  else if (pinEntry.length < 4) { pinEntry += k; }
+  updateDots();
+  if (pinEntry.length === 4) {
+    if (pinEntry === CORRECT_PIN) setTimeout(pinSuccess, 180);
+    else setTimeout(pinErr, 120);
+  }
+});
+
+// Keyboard PIN entry (when modal open)
+document.addEventListener('keydown', e => {
+  if (!pinModal.classList.contains('open')) return;
+  if (e.key === 'Escape') { closePinModal(); return; }
+  if (e.key >= '0' && e.key <= '9' && pinEntry.length < 4) {
+    pinEntry += e.key; updateDots();
+    if (pinEntry.length === 4) {
+      if (pinEntry === CORRECT_PIN) setTimeout(pinSuccess, 180);
+      else setTimeout(pinErr, 120);
     }
-    resize();
-    window.addEventListener('resize', resize);
+  } else if (e.key === 'Backspace') {
+    pinEntry = pinEntry.slice(0,-1); updateDots();
+  }
+});
 
-    const NUM_STARS = 125;
-    const stars = Array.from({ length: NUM_STARS }, () => ({
-      x:        Math.random(),
-      y:        Math.random(),
-      r:        Math.random() * 1.6 + 0.4,
-      baseAlpha:Math.random() * 0.55 + 0.25,
-      alpha:    0,
-      speed:    Math.random() * 0.018 + 0.005,
-      phase:    Math.random() * Math.PI * 2,
-      gold:     Math.random() < 0.22,
-      sparkTimer: Math.floor(Math.random() * 400),
-      sparking:   false,
-      sparkAlpha: 0,
-    }));
+/* ═══════════════════════════════════════════════════════════
+   ADMIN MODE
+═══════════════════════════════════════════════════════════ */
+function enterAdminMode() {
+  document.body.classList.add('admin-mode');
+  document.getElementById('adminBar').classList.add('show');
+  renderGallery(); // re-render to show delete buttons
+  showToast('Admin mode — delete buttons are now visible ✦', 'success');
+  setTimeout(() => openAdminPanel(), 400);
+}
+function exitAdminMode() {
+  document.body.classList.remove('admin-mode');
+  document.getElementById('adminBar').classList.remove('show');
+  closeAdminPanel();
+  sessionStorage.removeItem(SESSION_KEY);
+  renderGallery();
+  showToast('Exited admin mode.');
+}
 
-    const shoots = [];
-    function spawnShoot() {
-      const fromLeft = Math.random() < 0.5;
-      const startX   = fromLeft ? -10 : Math.random() * canvas.width;
-      const startY   = fromLeft ? Math.random() * canvas.height * 0.6 : -10;
-      const angle    = (Math.random() * 30 + 20) * Math.PI / 180;
-      const spd      = Math.random() * 5 + 4;
-      shoots.push({
-        x: startX, y: startY,
-        vx: Math.cos(angle) * spd,
-        vy: Math.sin(angle) * spd,
-        len: Math.random() * 80 + 60,
-        alpha: 0, life: 0,
-        maxLife: Math.floor(Math.random() * 40 + 60),
-      });
+function openAdminPanel()  { document.getElementById('adminPanel').classList.add('open'); }
+function closeAdminPanel() { document.getElementById('adminPanel').classList.remove('open'); }
+
+document.getElementById('abAddBtn').addEventListener('click', openAdminPanel);
+document.getElementById('abExitBtn').addEventListener('click', exitAdminMode);
+document.getElementById('apClose').addEventListener('click', closeAdminPanel);
+
+/* ═══════════════════════════════════════════════════════════
+   ADMIN PANEL — INPUT TABS
+═══════════════════════════════════════════════════════════ */
+document.getElementById('tabUrl').addEventListener('click', () => {
+  document.getElementById('tabUrl').classList.add('active');
+  document.getElementById('tabUpload').classList.remove('active');
+  document.getElementById('modeUrl').style.display = '';
+  document.getElementById('modeUpload').style.display = 'none';
+});
+document.getElementById('tabUpload').addEventListener('click', () => {
+  document.getElementById('tabUpload').classList.add('active');
+  document.getElementById('tabUrl').classList.remove('active');
+  document.getElementById('modeUpload').style.display = '';
+  document.getElementById('modeUrl').style.display = 'none';
+});
+
+/* ── URL preview ── */
+let urlPreviews = [];
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(()=>fn(...a), ms); }; }
+
+document.getElementById('urlInput').addEventListener('input', debounce(() => {
+  urlPreviews = document.getElementById('urlInput').value
+    .split('\n').map(s=>s.trim()).filter(s=>s.length>4)
+    .map(src => ({ src }));
+  renderUrlPreview();
+}, 380));
+
+function renderUrlPreview() {
+  const strip = document.getElementById('urlPreview');
+  strip.innerHTML = urlPreviews.map((p,i) => `
+    <div class="ap-thumb">
+      <img src="${esc(p.src)}" onerror="this.style.opacity='.15'" />
+      <div class="ap-thumb-rm" data-i="${i}">✕</div>
+    </div>
+  `).join('');
+  strip.querySelectorAll('.ap-thumb-rm').forEach(btn => {
+    btn.addEventListener('click', () => {
+      urlPreviews.splice(parseInt(btn.dataset.i), 1);
+      document.getElementById('urlInput').value = urlPreviews.map(p=>p.src).join('\n');
+      renderUrlPreview();
+    });
+  });
+}
+
+/* ── File upload / drag drop ── */
+let uploadFiles = [];
+const dropZone  = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('over'); handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', () => { handleFiles(fileInput.files); fileInput.value=''; });
+
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      uploadFiles.push({ src: ev.target.result, name: file.name });
+      renderUploadPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function renderUploadPreview() {
+  const strip = document.getElementById('uploadPreview');
+  strip.innerHTML = uploadFiles.map((f,i) => `
+    <div class="ap-thumb">
+      <img src="${esc(f.src)}" />
+      <div class="ap-thumb-rm" data-i="${i}">✕</div>
+    </div>
+  `).join('');
+  strip.querySelectorAll('.ap-thumb-rm').forEach(btn => {
+    btn.addEventListener('click', () => { uploadFiles.splice(parseInt(btn.dataset.i),1); renderUploadPreview(); });
+  });
+}
+
+/* ── Add photos ── */
+document.getElementById('addPhotosBtn').addEventListener('click', () => {
+  const caption = document.getElementById('captionInput').value.trim();
+  const isUrl   = document.getElementById('tabUrl').classList.contains('active');
+  let srcs = [];
+
+  if (isUrl) {
+    srcs = urlPreviews.length
+      ? urlPreviews.map(p=>p.src)
+      : document.getElementById('urlInput').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  } else {
+    srcs = uploadFiles.map(f => f.src);
+  }
+
+  if (!srcs.length) { showToast('No images to add.', 'err'); return; }
+
+  const added = loadAdded();
+  const now   = Date.now();
+  srcs.forEach((src, i) => {
+    added.push({
+      id:      genId(),
+      src,
+      full:    src, // uploaded / URL — use same for full view
+      caption: srcs.length > 1 && caption ? `${caption} (${i+1})` : caption,
+      addedAt: now + i,
+      original: false,
+    });
+  });
+  saveAdded(added);
+  renderGallery();
+
+  // Reset form
+  document.getElementById('urlInput').value = '';
+  document.getElementById('captionInput').value = '';
+  urlPreviews = []; uploadFiles = [];
+  document.getElementById('urlPreview').innerHTML = '';
+  document.getElementById('uploadPreview').innerHTML = '';
+
+  showToast(`${srcs.length} photo${srcs.length>1?'s':''} added ✦`, 'success');
+  closeAdminPanel();
+});
+
+/* ── Export ── */
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(loadAdded(), null, 2)], { type:'application/json' });
+  const a = Object.assign(document.createElement('a'), { href:URL.createObjectURL(blob), download:'nk_gallery.json' });
+  a.click();
+  showToast('Gallery exported.');
+});
+
+/* ── Import ── */
+document.getElementById('importJsonBtn').addEventListener('click', () => document.getElementById('importFileInput').click());
+document.getElementById('importFileInput').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data)) throw new Error();
+      saveAdded(data); renderGallery();
+      showToast(`Imported ${data.length} photos.`, 'success');
+    } catch { showToast('Invalid JSON.', 'err'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+/* ── Clear all added ── */
+document.getElementById('clearAllBtn').addEventListener('click', () => {
+  if (!confirm('Remove all admin-added photos? Original photos are kept.')) return;
+  saveAdded([]); renderGallery();
+  showToast('Added photos cleared.', 'err');
+  closeAdminPanel();
+});
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════ */
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ` ${type}` : '') + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════════════ */
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+renderGallery();
+// Restore admin session if still active
+if (sessionStorage.getItem(SESSION_KEY)) enterAdminMode();
+
+/* ═══════════════════════════════════════════════════════════
+   STARFIELD
+═══════════════════════════════════════════════════════════ */
+(function(){
+  const canvas = document.getElementById('starfield');
+  const ctx    = canvas.getContext('2d');
+  function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  const NUM=125;
+  const stars=Array.from({length:NUM},()=>({
+    x:Math.random(),y:Math.random(),r:Math.random()*1.6+0.4,
+    baseAlpha:Math.random()*0.55+0.25,speed:Math.random()*0.018+0.005,
+    phase:Math.random()*Math.PI*2,gold:Math.random()<0.22,
+    sparkTimer:Math.floor(Math.random()*400),sparking:false,sparkAlpha:0
+  }));
+  const shoots=[]; let nextShoot=Date.now()+1500+Math.random()*2000;
+  function spawnShoot(){
+    const fl=Math.random()<0.5, spd=Math.random()*5+4;
+    const ang=(Math.random()*30+20)*Math.PI/180;
+    shoots.push({x:fl?-10:Math.random()*canvas.width,y:fl?Math.random()*canvas.height*0.6:-10,
+      vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,len:Math.random()*80+60,alpha:0,life:0,
+      maxLife:Math.floor(Math.random()*40+60)});
+  }
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const W=canvas.width,H=canvas.height,now=Date.now();
+    for(const s of stars){
+      s.phase+=s.speed;
+      const a=s.baseAlpha*(0.3+0.7*(Math.sin(s.phase)*0.5+0.5));
+      s.sparkTimer--;
+      if(s.sparkTimer<=0&&!s.sparking){s.sparking=true;s.sparkAlpha=0;s.sparkTimer=Math.floor(Math.random()*600+300);}
+      if(s.sparking){s.sparkAlpha+=0.06;if(s.sparkAlpha>=1)s.sparking=false;}
+      ctx.save();ctx.globalAlpha=a;
+      ctx.beginPath();ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
+      ctx.fillStyle=s.gold?'#e8c87a':'#fff';ctx.fill();
+      if(s.sparking||s.sparkAlpha>0){
+        const sa=Math.sin(s.sparkAlpha*Math.PI)*0.8;
+        ctx.globalAlpha=sa;ctx.strokeStyle=s.gold?'#f5e0a0':'#fff';ctx.lineWidth=0.5;
+        const sx=s.x*W,sy=s.y*H,fl2=s.r*4;
+        ctx.beginPath();ctx.moveTo(sx-fl2,sy);ctx.lineTo(sx+fl2,sy);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(sx,sy-fl2);ctx.lineTo(sx,sy+fl2);ctx.stroke();
+      }
+      ctx.restore();
     }
-    let nextShoot = Date.now() + 1500 + Math.random() * 2000;
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const W = canvas.width, H = canvas.height;
-      const now = Date.now();
-
-      for (const s of stars) {
-        s.phase += s.speed;
-        s.alpha = s.baseAlpha * (0.3 + 0.7 * (Math.sin(s.phase) * 0.5 + 0.5));
-        s.sparkTimer--;
-        if (s.sparkTimer <= 0 && !s.sparking) {
-          s.sparking = true; s.sparkAlpha = 0;
-          s.sparkTimer = Math.floor(Math.random() * 600 + 300);
-        }
-        if (s.sparking) { s.sparkAlpha += 0.06; if (s.sparkAlpha >= 1) s.sparking = false; }
-        ctx.save();
-        ctx.globalAlpha = s.alpha;
-        ctx.beginPath();
-        ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = s.gold ? '#e8c87a' : '#ffffff';
-        ctx.fill();
-        if (s.sparking || s.sparkAlpha > 0) {
-          const sa = Math.sin(s.sparkAlpha * Math.PI) * 0.8;
-          ctx.globalAlpha = sa;
-          ctx.strokeStyle = s.gold ? '#f5e0a0' : '#ffffff';
-          ctx.lineWidth = 0.5;
-          const sx = s.x * W, sy = s.y * H, fl = s.r * 4;
-          ctx.beginPath(); ctx.moveTo(sx - fl, sy); ctx.lineTo(sx + fl, sy); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(sx, sy - fl); ctx.lineTo(sx, sy + fl); ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      if (now > nextShoot) {
-        spawnShoot();
-        nextShoot = now + 3000 + Math.random() * 5000;
-      }
-      for (let i = shoots.length - 1; i >= 0; i--) {
-        const sh = shoots[i];
-        sh.life++; sh.x += sh.vx; sh.y += sh.vy;
-        if (sh.life < 12)                      sh.alpha = Math.min(1, sh.life / 12);
-        if (sh.life > sh.maxLife - 20)         sh.alpha = Math.max(0, (sh.maxLife - sh.life) / 20);
-        if (sh.life > sh.maxLife || sh.x > W + 100 || sh.y > H + 100) { shoots.splice(i, 1); continue; }
-        const mag  = Math.sqrt(sh.vx * sh.vx + sh.vy * sh.vy);
-        const grad = ctx.createLinearGradient(sh.x, sh.y,
-          sh.x - (sh.vx / mag) * sh.len, sh.y - (sh.vy / mag) * sh.len);
-        grad.addColorStop(0,   `rgba(255,255,240,${sh.alpha * 0.9})`);
-        grad.addColorStop(0.3, `rgba(232,200,122,${sh.alpha * 0.5})`);
-        grad.addColorStop(1,   'rgba(232,200,122,0)');
-        ctx.save();
-        ctx.strokeStyle = grad; ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(sh.x, sh.y);
-        ctx.lineTo(sh.x - (sh.vx / mag) * sh.len, sh.y - (sh.vy / mag) * sh.len);
-        ctx.stroke();
-        ctx.globalAlpha = sh.alpha;
-        ctx.beginPath(); ctx.arc(sh.x, sh.y, 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff'; ctx.fill();
-        ctx.restore();
-      }
-      requestAnimationFrame(draw);
+    if(now>nextShoot){spawnShoot();nextShoot=now+3000+Math.random()*5000;}
+    for(let i=shoots.length-1;i>=0;i--){
+      const sh=shoots[i];sh.life++;sh.x+=sh.vx;sh.y+=sh.vy;
+      if(sh.life<12)sh.alpha=Math.min(1,sh.life/12);
+      if(sh.life>sh.maxLife-20)sh.alpha=Math.max(0,(sh.maxLife-sh.life)/20);
+      if(sh.life>sh.maxLife||sh.x>W+100||sh.y>H+100){shoots.splice(i,1);continue;}
+      const mag=Math.sqrt(sh.vx*sh.vx+sh.vy*sh.vy);
+      const g=ctx.createLinearGradient(sh.x,sh.y,sh.x-(sh.vx/mag)*sh.len,sh.y-(sh.vy/mag)*sh.len);
+      g.addColorStop(0,`rgba(255,255,240,${sh.alpha*0.9})`);
+      g.addColorStop(0.3,`rgba(232,200,122,${sh.alpha*0.5})`);
+      g.addColorStop(1,'rgba(232,200,122,0)');
+      ctx.save();ctx.strokeStyle=g;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(sh.x,sh.y);
+      ctx.lineTo(sh.x-(sh.vx/mag)*sh.len,sh.y-(sh.vy/mag)*sh.len);ctx.stroke();
+      ctx.globalAlpha=sh.alpha;ctx.beginPath();ctx.arc(sh.x,sh.y,1.5,0,Math.PI*2);
+      ctx.fillStyle='#fff';ctx.fill();ctx.restore();
     }
     requestAnimationFrame(draw);
-  })();
-
-  /* ── LIGHTBOX ─────────────────────────────────────────────── */
-  const FULL_SRCS = [
-    'https://media-api.xogrp.com/images/32070baa-499d-4b34-afe0-ad0dde03acbc~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/7125ef0a-47d6-4855-8155-1b7a470399fb~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/57925dfc-5b5b-40f7-a1ed-e7d19a4742a1~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/3cac0d82-9bbb-45af-9347-d93c4435f94f~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/3b2ebf4e-1091-4421-a5cf-c81109a276e8~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/51803c9c-6ad6-47f7-9830-3755f8408ec3~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/5d83ff33-50c9-48fa-8d98-d9b7ea2446a9~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/f9bcf8dc-78f8-4a17-a02e-cff0855d64d1~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/8bfc2bf5-906c-4e71-ae7f-4370e5885810~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/d337cb96-d76b-4683-a3bd-6a7035f0bdc3~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/d7ea3b31-552d-4c2a-8193-4c24e726978e~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/a3a68521-2e80-4137-8cea-9613a95dff16~rt_auto-rs_1200.h',
-    'https://media-api.xogrp.com/images/8df45254-0a61-479a-9cba-fce960c68778~rt_auto-rs_1200.h',
-  ];
-
-  const lightbox  = document.getElementById('lightbox');
-  const lbImg     = document.getElementById('lbImg');
-  const lbClose   = document.getElementById('lbClose');
-  const lbPrev    = document.getElementById('lbPrev');
-  const lbNext    = document.getElementById('lbNext');
-  const lbCounter = document.getElementById('lbCounter');
-  let currentIdx  = 0;
-
-  function openLightbox(idx) {
-    currentIdx = idx;
-    lbImg.src = FULL_SRCS[idx];
-    lbImg.alt = `Wedding photo ${idx + 1}`;
-    lbCounter.textContent = `${idx + 1} / ${FULL_SRCS.length}`;
-    lightbox.classList.add('open');
-    document.body.style.overflow = 'hidden';
   }
-
-  function closeLightbox() {
-    lightbox.classList.remove('open');
-    document.body.style.overflow = '';
-    lbImg.src = '';
-  }
-
-  function navigate(dir) {
-    currentIdx = (currentIdx + dir + FULL_SRCS.length) % FULL_SRCS.length;
-    lbImg.src = FULL_SRCS[currentIdx];
-    lbImg.alt = `Wedding photo ${currentIdx + 1}`;
-    lbCounter.textContent = `${currentIdx + 1} / ${FULL_SRCS.length}`;
-  }
-
-  document.querySelectorAll('.gallery-item').forEach(item => {
-    item.addEventListener('click', () => openLightbox(parseInt(item.dataset.index, 10)));
-  });
-
-  lbClose.addEventListener('click', closeLightbox);
-  lbPrev.addEventListener('click', () => navigate(-1));
-  lbNext.addEventListener('click', () => navigate(1));
-
-  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
-
-  document.addEventListener('keydown', e => {
-    if (!lightbox.classList.contains('open')) return;
-    if (e.key === 'Escape')     closeLightbox();
-    if (e.key === 'ArrowLeft')  navigate(-1);
-    if (e.key === 'ArrowRight') navigate(1);
-  });
+  requestAnimationFrame(draw);
+})();
 </script>
 </body>
 </html>
